@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChaiMCP Server for your favorite blockchain</title>
+    <meta name="description"
+        content="ChaiMCP server is a model context protocol (MCP) server that connects AI agents to your favorite blockchain's RPC APIs.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link href="./style.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .scroll-trigger {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .scroll-trigger.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hero-pattern {
+            background-color: var(--color-background);
+            background-image: radial-gradient(#44403C 0.5px, transparent 0.5px), radial-gradient(#44403C 0.5px, var(--color-background) 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.2;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-text selection:bg-cta selection:text-black">
+
+    <!-- Navigation -->
+    <nav
+        class="fixed top-4 left-4 right-4 max-w-[1600px] mx-auto z-50 bg-[#1C1917]/80 backdrop-blur-md rounded-xl shadow-sm border border-white/5 px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center">
+                <img src="./assets/chai_logo.svg" alt="Chai Logo" class="w-6 h-6">
+            </div>
+            <span class="font-mono font-bold text-xl tracking-tight text-white">mcp<span
+                    class="text-secondary">ch.ai</span></span>
+        </div>
+        <div class="hidden md:flex items-center gap-8">
+            <a href="#features" class="font-medium hover:text-primary transition-colors text-white/80">Features</a>
+            <a href="#install" class="font-medium hover:text-primary transition-colors text-white/80">Install</a>
+            <a href="#docs" class="font-medium hover:text-primary transition-colors text-white/80">Docs</a>
+        </div>
+        <a href="#install" class="btn-primary py-2 px-4 text-sm shadow-none">Get Started</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden px-8">
+        <div class="absolute inset-0 hero-pattern -z-10"></div>
+        <div class="absolute top-0 right-0 -z-10 opacity-20 transform translate-x-1/3 -translate-y-1/3">
+            <div class="w-[800px] h-[800px] bg-secondary blur-[150px] rounded-full mix-blend-screen filter"></div>
+        </div>
+        <div class="absolute bottom-0 left-0 -z-10 opacity-10 transform -translate-x-1/3 translate-y-1/3">
+            <div class="w-[600px] h-[600px] bg-primary blur-[120px] rounded-full mix-blend-screen filter"></div>
+        </div>
+
+        <div class="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-16 items-center">
+            <div class="scroll-trigger text-left">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-8 border border-secondary/20">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+                    </span>
+                    v0.1.0 Now Available
+                </div>
+
+                <h1 class="text-5xl lg:text-7xl font-bold tracking-tight mb-8 text-white leading-tight">
+                    Brewed for <span class="text-primary">Blockchain</span><br /> and AIs.
+                </h1>
+
+                <p class="text-xl text-text/80 mb-12 leading-loose">
+                    Connect your agent to your local blockchain node RPC API endpoints and increase it's knowledge
+                    with official documentation so your agent will know how to implement functionality and can test in realtime,
+                    manage wallets, create offers or cats, or offers for cats with peer-to-peer transactions.  ChaiMCP server might
+                    just save you some tokens.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <a href="#install" class="btn-primary w-full sm:w-auto flex items-center justify-center gap-2">
+                        <i data-lucide="terminal" class="w-5 h-5"></i>
+                        Install Server
+                    </a>
+                    <a href="#docs"
+                        class="btn-secondary w-full sm:w-auto flex items-center justify-center gap-2 border-white/20 text-white hover:bg-white/5 hover:border-white/40">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                        Read Documentation
+                    </a>
+                </div>
+            </div>
+
+            <!-- Code Preview -->
+            <div class="scroll-trigger delay-100">
+                <div
+                    class="bg-[#0f0e0e] rounded-xl overflow-hidden shadow-2xl border border-white/10 text-left transform rotate-1 hover:rotate-0 transition-transform duration-500 w-full ml-auto">
+                    <div class="bg-[#1C1917] px-4 py-3 flex items-center gap-2 border-b border-white/5">
+                        <div class="flex gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-[#FF5F56] opacity-80"></div>
+                            <div class="w-3 h-3 rounded-full bg-[#FFBD2E] opacity-80"></div>
+                            <div class="w-3 h-3 rounded-full bg-[#27C93F] opacity-80"></div>
+                        </div>
+                        <span class="text-xs text-stone-500 font-mono ml-2">terminal — zsh — 80x24</span>
+                    </div>
+                    <div class="p-8 font-mono text-sm text-gray-300">
+                        <div class="flex flex-col gap-4">
+                            <div class="flex gap-4 items-center">
+                                <span class="text-stone-600 select-none">$</span>
+                                <span class="typing-effect">npx -y lochness@chai</span>
+                            </div>
+                            <div class="text-stone-500 text-xs mt-2 select-none">
+                                ⠋ Installing packages...<br />
+                                ✓ ChaiMCP server installed successfully<br />
+                                <span class="text-secondary">➜</span> Connected to full node (mainnet)<br />
+                                <span class="text-secondary">➜</span> Wallet synced (height: 4920102)<br />
+                                <br />
+                                <span class="text-primary">Ready to brew thru some code! 🍵</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Story / Problem Section -->
+    <section class="py-32 px-8 bg-[#292524]/30 relative overflow-hidden border-y border-white/5">
+        <div class="max-w-[1400px] mx-auto">
+            <div class="grid lg:grid-cols-2 gap-24 items-center">
+                <div class="order-2 lg:order-1 relative scroll-trigger">
+                    <div
+                        class="absolute -inset-4 bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-2xl blur-2xl opacity-30">
+                    </div>
+                    <div class="bg-[#1C1917] p-8 rounded-2xl border border-white/10 relative">
+                        <div class="space-y-4 font-mono text-sm text-stone-400">
+                            <p>Error: connection refused</p>
+                            <p class="text-red-400">Exception: ssl_context requires valid private key</p>
+                            <p> at blockchain.rpc.full_node_rpc_client... </p>
+                            <p>...</p>
+                            <p class="text-stone-600">// Wait, where is the cert path?</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-1 lg:order-2 scroll-trigger">
+                    <h2 class="text-3xl lg:text-5xl font-bold text-white mb-8">Stop wrestling with <span
+                            class="text-red-400 line-through decoration-red-400/50">certs</span>.</h2>
+                    <p class="text-xl text-text/80 mb-8 leading-relaxed">
+                        The RPC is powerful but verbose. Managing connections, authenticating certificates, and
+                        parsing JSON responses manually destroys your flow.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="flex gap-4 items-center">
+                            <div
+                                class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </div>
+                            <span class="text-stone-400">Manual SSL config</span>
+                        </div>
+                        <div class="flex gap-4 items-center">
+                            <div
+                                class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </div>
+                            <span class="text-stone-400">Verbose JSON parsing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution / Features -->
+    <section id="features" class="py-32 px-8 bg-background relative">
+        <div class="max-w-[1600px] mx-auto">
+            <div class="text-center mb-24 scroll-trigger">
+                <span
+                    class="text-secondary font-bold tracking-wider uppercase text-sm border border-secondary/20 px-3 py-1 rounded-full">Features</span>
+                <h2 class="text-4xl lg:text-5xl font-bold text-white mt-6">Best served hot.</h2>
+                <p class="text-text/60 mt-6 max-w-4xl mx-auto text-lg leading-loose">Chai handles the brewing. You enjoy
+                    the tea. Full
+                    typesafety and auto-discovery for your agent.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="card scroll-trigger group">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-8 group-hover:bg-primary group-hover:text-black transition-colors">
+                        <i data-lucide="refresh-cw" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Auto-RPC Sync</h3>
+                    <p class="text-text/60 leading-relaxed text-lg">
+                        Automatically detects running services (farmer, wallet, full node) and exposes relevant
+                        tools to the MCP client.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card scroll-trigger delay-100 group">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary mb-8 group-hover:bg-secondary group-hover:text-black transition-colors">
+                        <i data-lucide="shield-check" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Secure Auth</h3>
+                    <p class="text-text/60 leading-relaxed text-lg">
+                        Reads your local config to securely locate and use SSL certificates. No manual private key
+                        path configuration needed.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card scroll-trigger delay-200 group">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-cta/10 flex items-center justify-center text-cta mb-8 group-hover:bg-cta group-hover:text-black transition-colors">
+                        <i data-lucide="zap" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Instant Queries</h3>
+                    <p class="text-text/60 leading-relaxed text-lg">
+                        "Get me the latest block height." "Show my XCH balance." Natural language queries executed in
+                        milliseconds.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation / CTA -->
+    <section id="install" class="py-32 px-8 bg-black text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20 pattern-dots"></div>
+        <!-- Glowing orb effect -->
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-primary/20 blur-[150px] rounded-full">
+        </div>
+
+        <div class="max-w-5xl mx-auto text-center relative z-10 scroll-trigger">
+            <h2 class="text-5xl lg:text-7xl font-bold mb-10 tracking-tight">Cup of chai?</h2>
+            <p class="text-white/60 text-2xl mb-12 max-w-4xl mx-auto font-light leading-loose">
+                Get started with ChaiMCP server in seconds. It's open source, community driven, and built for a particular
+                blockchain's ecosystem for the win.
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-8 justify-center items-center">
+                <div
+                    class="bg-[#1C1917]/80 backdrop-blur-xl p-2 rounded-xl flex items-center border border-white/10 shadow-2xl">
+                    <div class="px-6 py-4 font-mono text-lg text-secondary">
+                        npx -y lochness@chai
+                    </div>
+                    <button class="p-4 hover:bg-white/10 rounded-lg transition-colors text-white/50 hover:text-white"
+                        onclick="navigator.clipboard.writeText('npx -y lochness@chai')">
+                        <i data-lucide="copy" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <!-- Divider -->
+                <div class="h-px w-20 bg-white/10 md:hidden"></div>
+                <div class="w-px h-12 bg-white/10 hidden md:block"></div>
+
+                <a href="https://github.com/dcarrith/chaimcp"
+                    class="btn-primary bg-white text-black hover:bg-white/90 shadow-xl px-8 py-4 text-lg">
+                    <i data-lucide="github" class="w-6 h-6 mr-2 inline"></i>
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-white/10 py-16 px-8">
+        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                <img src="./assets/chai_logo.svg" alt="Chai Logo" class="w-8 h-8 opacity-90">
+                <span class="font-mono font-bold text-xl text-white">mcp<span class="text-secondary">ch.ai</span></span>
+            </div>
+
+            <div class="flex gap-12 text-base font-medium text-stone-500">
+                <a href="#" class="hover:text-white transition-colors">Documentation</a>
+                <a href="#" class="hover:text-white transition-colors">GitHub</a>
+                <a href="#" class="hover:text-white transition-colors">License</a>
+            </div>
+
+            <div class="text-sm text-stone-600">
+                &copy; 2026 ChaiMCP. Brewed for 🌱.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Scroll Animation Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        document.querySelectorAll('.scroll-trigger').forEach((el) => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+
+</html>

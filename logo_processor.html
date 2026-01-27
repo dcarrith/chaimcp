@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <img id="source" src="./assets/chai_logo.png" style="display:none;" crossOrigin="Anonymous">
+    <canvas id="canvas"></canvas>
+    <div id="output"></div>
+
+    <script>
+        const img = document.getElementById('source');
+        img.onload = () => {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // Target color at (0,0)
+            const r0 = data[0];
+            const g0 = data[1];
+            const b0 = data[2];
+            // If transparent already, we are good, but let's assume it is white
+
+            const threshold = 30;
+            function match(pos) {
+                const r = data[pos];
+                const g = data[pos + 1];
+                const b = data[pos + 2];
+                return Math.abs(r - r0) < threshold &&
+                    Math.abs(g - g0) < threshold &&
+                    Math.abs(b - b0) < threshold;
+            }
+
+            const queue = [[0, 0]];
+            const visited = new Set();
+            visited.add(0);
+
+            while (queue.length > 0) {
+                const [x, y] = queue.shift();
+                const pos = (y * width + x) * 4;
+
+                // Set transparent
+                data[pos + 3] = 0;
+
+                const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+                for (let d of dirs) {
+                    const nx = x + d[0];
+                    const ny = y + d[1];
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                        const nPos = (ny * width + nx) * 4;
+                        if (!visited.has(nPos) && match(nPos)) {
+                            visited.add(nPos);
+                            queue.push([nx, ny]);
+                        }
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            const base64 = canvas.toDataURL('image/png');
+            document.getElementById('output').textContent = base64;
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+    /* Dark Roast Theme */
+    --color-primary: #FBBF24;
+    /* Amber-400 */
+    --color-secondary: #4ADE80;
+    /* Green-400 */
+    --color-cta: #F59E0B;
+    /* Amber-500 */
+    --color-background: #1C1917;
+    /* Stone-900 */
+    --color-text: #F3F4F6;
+    /* Gray-100 */
+
+    /* Fonts */
+    --font-sans: "IBM Plex Sans", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    --spacing-3xl: 4rem;
+
+    /* Shadows - Adjusted for Dark Mode */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+}
+
+@layer components {
+    .btn-primary {
+        @apply bg-cta text-black px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer hover:opacity-90 hover:-translate-y-px shadow-md hover:shadow-lg inline-block;
+    }
+
+    .btn-secondary {
+        @apply bg-transparent text-secondary border-2 border-secondary px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer hover:bg-secondary/10 hover:-translate-y-px inline-block;
+    }
+
+    .card {
+        @apply bg-[#292524] rounded-xl p-8 shadow-md transition-all duration-200 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 border border-white/5;
+    }
+
+    .input {
+        @apply px-4 py-3 border border-stone-700 rounded-lg text-base transition-colors duration-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 bg-[#292524] text-white;
+    }
+}

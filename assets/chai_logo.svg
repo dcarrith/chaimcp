@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Cup Body Shape (White Background for interior) -->
+  <path d="M112 160 H400 C400 160 400 368 256 368 C112 368 112 160 112 160 Z" fill="white" />
+  
+  <!-- Handle Shape (White Background) -->
+  <path d="M400 192 C440 192 464 220 464 256 C464 292 440 320 400 320" stroke="white" stroke-width="32" stroke-linecap="round" fill="none"/>
+
+  <!-- Network Links (Edges) -->
+  <!-- Cup Body Network -->
+  <path d="M144 192 L200 240 L256 192 L312 240 L368 192" stroke="#FBBF24" stroke-width="4" opacity="0.6"/>
+  <path d="M144 192 L144 280 L200 330 L256 350 L312 330 L368 280 L368 192" stroke="#FBBF24" stroke-width="4" opacity="0.6"/>
+  <path d="M200 240 L200 330" stroke="#FBBF24" stroke-width="4" opacity="0.6"/>
+  <path d="M312 240 L312 330" stroke="#FBBF24" stroke-width="4" opacity="0.6"/>
+  <path d="M256 192 L256 350" stroke="#FBBF24" stroke-width="4" opacity="0.6"/>
+  <path d="M200 240 L256 280 L312 240" stroke="#FBBF24" stroke-width="4" opacity="0.6"/>
+  
+  <!-- Handle Network -->
+  <path d="M400 200 C430 200 448 220 448 256 C448 290 430 312 400 312" stroke="#4ADE80" stroke-width="4" fill="none" opacity="0.6"/>
+  
+  <!-- Network Nodes -->
+  <!-- Top Rim -->
+  <circle cx="144" cy="192" r="8" fill="#FBBF24" />
+  <circle cx="200" cy="192" r="6" fill="#4ADE80" />
+  <circle cx="256" cy="192" r="8" fill="#FBBF24" />
+  <circle cx="312" cy="192" r="6" fill="#4ADE80" />
+  <circle cx="368" cy="192" r="8" fill="#FBBF24" />
+  
+  <!-- Middle Layer -->
+  <circle cx="200" cy="240" r="7" fill="#FBBF24" />
+  <circle cx="312" cy="240" r="7" fill="#FBBF24" />
+  <circle cx="256" cy="280" r="6" fill="#4ADE80" />
+  
+  <!-- Bottom Layer -->
+  <circle cx="144" cy="280" r="6" fill="#4ADE80" />
+  <circle cx="368" cy="280" r="6" fill="#4ADE80" />
+  <circle cx="200" cy="330" r="7" fill="#FBBF24" />
+  <circle cx="312" cy="330" r="7" fill="#FBBF24" />
+  <circle cx="256" cy="350" r="8" fill="#4ADE80" />
+  
+  <!-- Handle Nodes -->
+  <circle cx="448" cy="256" r="6" fill="#4ADE80" />
+  <circle cx="420" cy="210" r="5" fill="#FBBF24" />
+  <circle cx="420" cy="302" r="5" fill="#FBBF24" />
+
+  <!-- Steam Nodes (Rising up) -->
+  <circle cx="256" cy="120" r="10" fill="#4ADE80" opacity="0.8"/>
+  <path d="M256 120 L256 150" stroke="#4ADE80" stroke-width="4"/>
+  
+  <circle cx="220" cy="80" r="8" fill="#FBBF24" opacity="0.7"/>
+  <path d="M220 80 L240 110" stroke="#FBBF24" stroke-width="3"/>
+  
+  <circle cx="292" cy="70" r="9" fill="#4ADE80" opacity="0.7"/>
+  <path d="M292 70 L270 100" stroke="#4ADE80" stroke-width="3"/>
+
+</svg>
