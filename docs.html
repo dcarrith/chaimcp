@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChaiMCP Server - Documentation</title>
+    <meta name="description" content="Documentation for ChaiMCP server. Visualize the agentic workflow.">
+    <meta name="keywords"
+        content="Chia Blockchain, Model Context Protocol (MCP) servers, AI agent, vibe-coding, documentation">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link href="./style.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .hero-pattern {
+            background-color: var(--color-background);
+            background-image: radial-gradient(#44403C 0.5px, transparent 0.5px), radial-gradient(#44403C 0.5px, var(--color-background) 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.2;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-text selection:bg-cta selection:text-black min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav
+        class="fixed top-4 left-4 right-4 max-w-[1600px] mx-auto z-50 bg-[#1C1917]/80 backdrop-blur-md rounded-xl shadow-sm border border-white/5 px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center">
+                <img src="./assets/chai_logo.svg" alt="Chai Logo" class="w-6 h-6">
+            </div>
+            <a href="./index.html" class="font-mono font-bold text-xl tracking-tight text-white">mcp<span
+                    class="text-secondary">ch.ai</span></a>
+        </div>
+        <div class="hidden md:flex items-center gap-8">
+            <a href="./index.html#features"
+                class="font-medium hover:text-primary transition-colors text-white/80">Features</a>
+            <a href="./index.html#install"
+                class="font-medium hover:text-primary transition-colors text-white/80">Install</a>
+            <a href="#" class="font-medium text-primary transition-colors text-white">Docs</a>
+        </div>
+        <a href="./index.html#install" class="btn-primary py-2 px-4 text-sm shadow-none">Get Started</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-32 pb-20 px-8 relative overflow-hidden flex items-center justify-center">
+        <div class="absolute inset-0 hero-pattern -z-10"></div>
+
+        <!-- Glowing orb effects -->
+        <div class="absolute top-0 right-0 -z-10 opacity-20 transform translate-x-1/3 -translate-y-1/3">
+            <div class="w-[800px] h-[800px] bg-secondary blur-[150px] rounded-full mix-blend-screen filter"></div>
+        </div>
+        <div class="absolute bottom-0 left-0 -z-10 opacity-10 transform -translate-x-1/3 translate-y-1/3">
+            <div class="w-[600px] h-[600px] bg-primary blur-[120px] rounded-full mix-blend-screen filter"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto w-full text-center">
+            <h1 class="text-4xl lg:text-6xl font-bold mb-12 text-white">ChaiMCP Workflow</h1>
+
+            <div
+                class="bg-[#1C1917]/50 backdrop-blur-sm border border-white/10 rounded-2xl p-4 shadow-2xl inline-block max-w-full">
+                <img src="./assets/mcp_workflow_diagram.png" alt="ChaiMCP Agentic Workflow Diagram"
+                    class="max-w-full h-auto rounded-xl">
+            </div>
+
+            <p class="mt-8 text-xl text-text/60 max-w-2xl mx-auto">
+                Visualizing how ChaiMCP connects your agentic IDE to the blockchain node ecosystem.
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-white/10 py-16 px-8">
+        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                <img src="./assets/chai_logo.svg" alt="Chai Logo" class="w-8 h-8 opacity-90">
+                <span class="font-mono font-bold text-xl text-white">mcp<span class="text-secondary">ch.ai</span></span>
+            </div>
+
+            <div class="flex gap-12 text-base font-medium text-stone-500">
+                <a href="#" class="text-white transition-colors">Documentation</a>
+                <a href="https://github.com/dcarrith/chaimcp" class="hover:text-white transition-colors">GitHub</a>
+                <a href="#" class="hover:text-white transition-colors">License</a>
+            </div>
+
+            <div class="text-sm text-stone-600">
+                &copy; 2026 ChaiMCP. Brewed for 🌱.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
