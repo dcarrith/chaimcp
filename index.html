@@ -142,18 +142,22 @@
                         <span class="text-xs text-stone-500 font-mono ml-2">terminal — zsh — 80x24</span>
                     </div>
                     <div class="p-8 font-mono text-sm text-gray-300">
-                        <div class="flex flex-col gap-4">
-                            <div class="flex gap-4 items-center">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex gap-3 items-center">
                                 <span class="text-stone-600 select-none">$</span>
-                                <span class="typing-effect">npx -y lochness@chai</span>
+                                <span class="text-stone-300">git clone https://github.com/dcarrith/chaimcp</span>
                             </div>
-                            <div class="text-stone-500 text-xs mt-2 select-none">
-                                ⠋ Installing packages...<br />
-                                ✓ ChaiMCP server installed successfully<br />
+                            <div class="flex gap-3 items-center">
+                                <span class="text-stone-600 select-none">$</span>
+                                <span class="typing-effect">cd chaimcp && ./install.sh</span>
+                            </div>
+                            <div class="text-stone-500 text-xs mt-2 select-none leading-relaxed">
+                                <span class="text-stone-400">⠋</span> Creating virtual environment...<br />
+                                <span class="text-green-500">✓</span> Dependencies installed<br />
+                                <span class="text-secondary">➜</span> Server listening on stdio<br />
                                 <span class="text-secondary">➜</span> Connected to full node (mainnet)<br />
-                                <span class="text-secondary">➜</span> Wallet synced (height: 4920102)<br />
                                 <br />
-                                <span class="text-primary">Ready to brew thru some code! 🍵</span>
+                                <span class="text-primary font-bold">Ready to brew thru some code! 🍵</span>
                             </div>
                         </div>
                     </div>
@@ -217,7 +221,7 @@
                 <h2 class="text-4xl lg:text-5xl font-bold text-white mt-6">Best served hot.</h2>
                 <p class="text-text/60 mt-6 max-w-4xl mx-auto text-lg leading-loose">Chai handles the brewing. You enjoy
                     the tea. Full
-                    typesafety and auto-discovery for your agent.</p>
+                    typesafety and auto-discovery for your agent. Supports both Local and Kubernetes deployment.</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8">
@@ -271,7 +275,7 @@
             class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-primary/20 blur-[150px] rounded-full">
         </div>
 
-        <div class="max-w-5xl mx-auto text-center relative z-10 scroll-trigger">
+        <div class="max-w-6xl mx-auto text-center relative z-10 scroll-trigger">
             <h2 class="text-5xl lg:text-7xl font-bold mb-10 tracking-tight">Cup of chai?</h2>
             <p class="text-white/60 text-2xl mb-12 max-w-4xl mx-auto font-light leading-loose">
                 Get started with ChaiMCP server in seconds. It's open source, community driven, and built for a
@@ -279,24 +283,62 @@
                 blockchain's ecosystem for the win.
             </p>
 
-            <div class="flex flex-col md:flex-row gap-8 justify-center items-center">
+            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto text-left">
+                <!-- Local Install -->
                 <div
-                    class="bg-[#1C1917]/80 backdrop-blur-xl p-2 rounded-xl flex items-center border border-white/10 shadow-2xl">
-                    <div class="px-6 py-4 font-mono text-lg text-secondary">
-                        npx -y lochness@chai
+                    class="bg-[#1C1917]/80 backdrop-blur-xl p-8 rounded-2xl border border-white/10 shadow-2xl flex flex-col h-full">
+                    <div class="flex items-center gap-3 mb-6">
+                        <i data-lucide="monitor" class="w-6 h-6 text-primary"></i>
+                        <h3 class="text-2xl font-bold text-white">Local Run</h3>
                     </div>
-                    <button class="p-4 hover:bg-white/10 rounded-lg transition-colors text-white/50 hover:text-white"
-                        onclick="navigator.clipboard.writeText('npx -y lochness@chai')">
-                        <i data-lucide="copy" class="w-5 h-5"></i>
-                    </button>
-                </div>
-                <!-- Divider -->
-                <div class="h-px w-20 bg-white/10 md:hidden"></div>
-                <div class="w-px h-12 bg-white/10 hidden md:block"></div>
+                    <p class="text-stone-400 mb-6 flex-grow">Clone and run directly on your machine. Best for individual
+                        developers.</p>
 
+                    <div class="space-y-4">
+                        <div
+                            class="bg-black/50 p-4 rounded-lg border border-white/5 font-mono text-sm text-secondary overflow-x-auto">
+                            git clone https://github.com/dcarrith/chaimcp<br />
+                            cd chaimcp<br />
+                            ./install.sh
+                        </div>
+                        <button
+                            class="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white transition-all flex items-center justify-center gap-2"
+                            onclick="navigator.clipboard.writeText('git clone https://github.com/dcarrith/chaimcp && cd chaimcp && ./install.sh')">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copy Commands
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Kubernetes Install -->
+                <div
+                    class="bg-[#1C1917]/80 backdrop-blur-xl p-8 rounded-2xl border border-white/10 shadow-2xl flex flex-col h-full">
+                    <div class="flex items-center gap-3 mb-6">
+                        <i data-lucide="container" class="w-6 h-6 text-secondary"></i>
+                        <h3 class="text-2xl font-bold text-white">Kubernetes</h3>
+                    </div>
+                    <p class="text-stone-400 mb-6 flex-grow">Deploy as a container in your cluster. Ideal for agentic
+                        workflows at scale.</p>
+
+                    <div class="space-y-4">
+                        <div
+                            class="bg-black/50 p-4 rounded-lg border border-white/5 font-mono text-sm text-secondary overflow-x-auto">
+                            docker build -t chaimcp .<br />
+                            kubectl apply -f k8s/<br />
+                            # configured for internal network
+                        </div>
+                        <button
+                            class="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white transition-all flex items-center justify-center gap-2"
+                            onclick="navigator.clipboard.writeText('docker build -t chaimcp . && kubectl apply -f k8s/')">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copy Commands
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-16">
                 <a href="https://github.com/dcarrith/chaimcp"
-                    class="btn-primary bg-white text-black hover:bg-white/90 shadow-xl px-8 py-4 text-lg">
-                    <i data-lucide="github" class="w-6 h-6 mr-2 inline"></i>
+                    class="btn-primary bg-white text-black hover:bg-white/90 shadow-xl px-8 py-4 text-lg inline-flex items-center">
+                    <i data-lucide="github" class="w-6 h-6 mr-2"></i>
                     View on GitHub
                 </a>
             </div>
