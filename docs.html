@@ -160,7 +160,10 @@
   "mcpServers": {
     "chaimcp-k8s": {
       "url": "http://localhost:8000/sse",
-      "transport": "sse"
+      "transport": "sse",
+      "headers": {
+        "Authorization": "Bearer YOUR_AUTH_TOKEN"
+      }
     }
   }
 }</code></pre>

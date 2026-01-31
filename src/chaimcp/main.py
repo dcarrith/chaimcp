@@ -1,9 +1,43 @@
 from mcp.server.fastmcp import FastMCP
+from mcp.server.auth.settings import AuthSettings
+from mcp.server.auth.provider import TokenVerifier, AccessToken
 from .chia_client import ChiaRpcClient
 import json
+import os
+
+# --- Authentication ---
+
+class EnvTokenVerifier:
+    def __init__(self, token: str):
+        self.token = token
+
+    async def verify_token(self, token: str) -> AccessToken | None:
+        if token == self.token:
+            return AccessToken(
+                token=token,
+                client_id="unknown",
+                scopes=[],
+            )
+        return None
+
+auth_token = os.environ.get("MCP_AUTH_TOKEN")
+auth_settings = None
+token_verifier = None
+
+if auth_token:
+    # We must provide AuthSettings if we provide a verifier, even if we don't use the issuer/resource_url logic
+    auth_settings = AuthSettings(
+        issuer_url="http://localhost",
+        resource_server_url="http://localhost",
+    )
+    token_verifier = EnvTokenVerifier(auth_token)
 
 # Initialize FastMCP server
-mcp = FastMCP("chaimcp")
+mcp = FastMCP(
+    "chaimcp",
+    auth=auth_settings,
+    token_verifier=token_verifier
+)
 
 # --- Full Node Tools ---
 
