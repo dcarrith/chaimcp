@@ -1,4 +1,7 @@
+import sys
+import subprocess
 import unittest
+from importlib import reload
 from unittest.mock import patch, MagicMock, AsyncMock
 import os
 import json
@@ -131,3 +134,46 @@ class TestMain(unittest.TestCase):
         args, kwargs = mock_uvicorn.call_args
         self.assertEqual(kwargs["ssl_keyfile"], "k")
         self.assertEqual(kwargs["ssl_certfile"], "c")
+
+    def test_auth_token_env(self):
+        """Test global auth settings initialization with env var."""
+        with patch.dict(os.environ, {"MCP_AUTH_TOKEN": "test-token"}):
+            reload(main_module)
+            self.assertIsNotNone(main_module.auth_settings)
+            self.assertIsNotNone(main_module.token_verifier)
+            self.assertEqual(main_module.token_verifier.token, "test-token")
+
+    def test_main_execution(self):
+        """Test executing the module as a script (covers __name__ == '__main__')."""
+        env = os.environ.copy()
+        env["MCP_TRANSPORT"] = "stdio"
+        env["PYTHONUNBUFFERED"] = "1" # Ensure output is flushed immediately
+        
+        try:
+            process = subprocess.Popen(
+                [sys.executable, "-m", "chaimcp.main"],
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            try:
+                # Wait a bit for startup
+                output, error = process.communicate(timeout=2) 
+            except subprocess.TimeoutExpired:
+                process.kill()
+                output, error = process.communicate()
+            
+            # Combine output for checking
+            full_output = output + error
+            
+            if "ChaiMCP module loaded" not in full_output:
+                # Debugging aid
+                print(f"STDOUT: {output}")
+                print(f"STDERR: {error}")
+            
+            self.assertIn("ChaiMCP module loaded", full_output)
+            
+        except Exception as e:
+            self.fail(f"Subprocess execution failed: {e}")
+
