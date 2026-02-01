@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChaiMCP Unit Test Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1C1917; color: #F3F4F6; padding: 2rem; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid #333; padding-bottom: 1rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
+        .card { background: #292524; padding: 1.5rem; border-radius: 12px; border: 1px solid #44403C; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .chart-container { position: relative; height: 250px; display: flex; justify-content: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #444; }
+        th { background: #1C1917; }
+        .status-passed { color: #4ADE80; font-weight: bold; }
+        .status-failed { color: #F87171; font-weight: bold; }
+        .metric { font-size: 2.5rem; font-weight: bold; margin: 0.5rem 0; }
+        .metric-label { color: #A8A29E; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.05em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 style="color: #FBBF24; margin: 0;">ChaiMCP Test Report</h1>
+                <p style="color: #A8A29E; margin-top: 0.5rem;">Generated: 2026-02-01 17:54:13</p>
+            </div>
+            <div style="text-align: right;">
+                <div class="metric" style="color: #4ADE80">100.0%</div>
+                <div class="metric-label">Pass Rate</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="card">
+                <h3>Test Results</h3>
+                <div class="chart-container">
+                    <canvas id="testChart"></canvas>
+                </div>
+                <div style="display: flex; justify-content: space-around; margin-top: 1rem; text-align: center;">
+                    <div><div class="metric">33</div><div class="metric-label">Total</div></div>
+                    <div><div class="metric" style="color: #4ADE80">33</div><div class="metric-label">Passed</div></div>
+                    <div><div class="metric" style="color: #F87171">0</div><div class="metric-label">Failed</div></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Code Coverage</h3>
+                <div class="chart-container">
+                    <canvas id="coverageChart"></canvas>
+                </div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <div class="metric">96.2%</div>
+                    <div class="metric-label">Total Coverage</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Detailed Results</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Case</th>
+                        <th>Outcome</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td style="font-family: monospace;">test_get_connection_error<br><span style="color: #666; font-size: 0.8em">tests/test_chia_client.py::TestChiaRpcClient::test_get_connection_error</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0011s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_get_generic_exception<br><span style="color: #666; font-size: 0.8em">tests/test_chia_client.py::TestChiaRpcClient::test_get_generic_exception</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0005s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_get_success<br><span style="color: #666; font-size: 0.8em">tests/test_chia_client.py::TestChiaRpcClient::test_get_success</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0007s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_init_defaults<br><span style="color: #666; font-size: 0.8em">tests/test_chia_client.py::TestChiaRpcClient::test_init_defaults</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0005s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_init_explicit_port<br><span style="color: #666; font-size: 0.8em">tests/test_chia_client.py::TestChiaRpcClient::test_init_explicit_port</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0005s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_init_unknown_service<br><span style="color: #666; font-size: 0.8em">tests/test_chia_client.py::TestChiaRpcClient::test_init_unknown_service</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0007s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_wrappers<br><span style="color: #666; font-size: 0.8em">tests/test_chia_client.py::TestChiaRpcClient::test_wrappers</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0006s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_get_chia_root_default<br><span style="color: #666; font-size: 0.8em">tests/test_config.py::TestConfig::test_get_chia_root_default</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0004s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_get_chia_root_env_var<br><span style="color: #666; font-size: 0.8em">tests/test_config.py::TestConfig::test_get_chia_root_env_var</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0003s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_get_ssl_paths<br><span style="color: #666; font-size: 0.8em">tests/test_config.py::TestConfig::test_get_ssl_paths</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0003s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_get_ssl_paths_implicit_root<br><span style="color: #666; font-size: 0.8em">tests/test_config.py::TestConfig::test_get_ssl_paths_implicit_root</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0004s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_load_chia_config_implicit_root<br><span style="color: #666; font-size: 0.8em">tests/test_config.py::TestConfig::test_load_chia_config_implicit_root</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0014s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_load_chia_config_not_found<br><span style="color: #666; font-size: 0.8em">tests/test_config.py::TestConfig::test_load_chia_config_not_found</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0004s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_load_chia_config_success<br><span style="color: #666; font-size: 0.8em">tests/test_config.py::TestConfig::test_load_chia_config_success</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0010s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_deployment_manifest<br><span style="color: #666; font-size: 0.8em">tests/test_deployment.py::TestKubernetesManifests::test_deployment_manifest</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0016s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_ingress_manifest<br><span style="color: #666; font-size: 0.8em">tests/test_deployment.py::TestKubernetesManifests::test_ingress_manifest</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0010s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_issuer_manifest<br><span style="color: #666; font-size: 0.8em">tests/test_deployment.py::TestKubernetesManifests::test_issuer_manifest</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0007s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_secret_manifest<br><span style="color: #666; font-size: 0.8em">tests/test_deployment.py::TestKubernetesManifests::test_secret_manifest</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0005s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_service_manifest<br><span style="color: #666; font-size: 0.8em">tests/test_deployment.py::TestKubernetesManifests::test_service_manifest</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0005s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_env_token_verifier<br><span style="color: #666; font-size: 0.8em">tests/test_main.py::TestMain::test_env_token_verifier</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0011s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_main_http_ssl<br><span style="color: #666; font-size: 0.8em">tests/test_main.py::TestMain::test_main_http_ssl</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0008s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_main_sse_no_ssl<br><span style="color: #666; font-size: 0.8em">tests/test_main.py::TestMain::test_main_sse_no_ssl</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0005s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_main_stdio<br><span style="color: #666; font-size: 0.8em">tests/test_main.py::TestMain::test_main_stdio</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0004s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_tool_get_blockchain_state_failure<br><span style="color: #666; font-size: 0.8em">tests/test_main.py::TestMain::test_tool_get_blockchain_state_failure</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0003s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_tool_get_blockchain_state_success<br><span style="color: #666; font-size: 0.8em">tests/test_main.py::TestMain::test_tool_get_blockchain_state_success</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0004s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_tool_get_network_info<br><span style="color: #666; font-size: 0.8em">tests/test_main.py::TestMain::test_tool_get_network_info</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0003s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_tool_get_wallet_balance_failure<br><span style="color: #666; font-size: 0.8em">tests/test_main.py::TestMain::test_tool_get_wallet_balance_failure</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0003s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_tool_get_wallet_balance_success<br><span style="color: #666; font-size: 0.8em">tests/test_main.py::TestMain::test_tool_get_wallet_balance_success</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0003s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_npx_launch_help<br><span style="color: #666; font-size: 0.8em">tests/test_npx_launch.py::TestNpxLaunch::test_npx_launch_help</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.3490s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_invalid_token<br><span style="color: #666; font-size: 0.8em">tests/test_server.py::TestAuth::test_invalid_token</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0025s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_valid_token<br><span style="color: #666; font-size: 0.8em">tests/test_server.py::TestAuth::test_valid_token</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0010s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_get_blockchain_state<br><span style="color: #666; font-size: 0.8em">tests/test_server.py::TestChaiMCP::test_get_blockchain_state</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0005s</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace;">test_get_wallet_balance<br><span style="color: #666; font-size: 0.8em">tests/test_server.py::TestChaiMCP::test_get_wallet_balance</span></td>
+                        <td class="status-passed">PASSED</td>
+                        <td>0.0003s</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Test Results Chart
+        new Chart(document.getElementById('testChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Passed', 'Failed', 'Skipped'],
+                datasets: [{
+                    data: [33, 0, 0],
+                    backgroundColor: ['#4ADE80', '#F87171', '#9CA3AF'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#D6D3D1' } }
+                }
+            }
+        });
+
+        // Coverage Chart
+        new Chart(document.getElementById('coverageChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Coverage'],
+                datasets: [{
+                    label: 'Percentage',
+                    data: [96.183206],
+                    backgroundColor: ['#FBBF24'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        max: 100,
+                        grid: { color: '#444' },
+                        ticks: { color: '#D6D3D1' }
+                    },
+                    x: { display: false }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
