@@ -68,3 +68,13 @@ class TestConfig(unittest.TestCase):
         paths = get_ssl_paths("wallet")
         base = "/implicit/root/config/ssl/wallet"
         self.assertEqual(paths["cert"], f"{base}/private_wallet.crt")
+
+    @patch("pathlib.Path.exists")
+    def test_get_ssl_paths_fallback(self, mock_exists):
+        """Test SSL path generation fallback when files don't exist."""
+        mock_exists.return_value = False
+        root = Path("/test/root")
+        # Should execute the 'pass' block and still return paths
+        paths = get_ssl_paths("full_node", root)
+        self.assertIn("private_full_node.crt", paths["cert"])
+

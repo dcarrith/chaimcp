@@ -23,45 +23,107 @@ def generate_html_report(test_results, coverage_results):
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChaiMCP Unit Test Report</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1C1917; color: #F3F4F6; padding: 2rem; }}
-        .container {{ max-width: 1200px; margin: 0 auto; }}
-        .header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid #333; padding-bottom: 1rem; }}
-        .stats-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem; }}
-        .card {{ background: #292524; padding: 1.5rem; border-radius: 12px; border: 1px solid #44403C; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }}
-        .chart-container {{ position: relative; height: 250px; display: flex; justify-content: center; }}
-        table {{ width: 100%; border-collapse: collapse; margin-top: 1rem; }}
-        th, td {{ text-align: left; padding: 12px; border-bottom: 1px solid #444; }}
-        th {{ background: #1C1917; }}
-        .status-passed {{ color: #4ADE80; font-weight: bold; }}
-        .status-failed {{ color: #F87171; font-weight: bold; }}
-        .metric {{ font-size: 2.5rem; font-weight: bold; margin: 0.5rem 0; }}
-        .metric-label {{ color: #A8A29E; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.05em; }}
+        :root {{
+            --color-background: #0C0A09; 
+            --color-surface: #1C1917;
+            --color-primary: #FBBF24;
+            --color-text: #F3F4F6;
+            --color-text-dim: #A8A29E;
+            --color-border: rgba(255, 255, 255, 0.1);
+        }}
+        
+        body {{ 
+            font-family: 'IBM Plex Sans', sans-serif; 
+            background-color: #0C0A09; 
+            color: var(--color-text); 
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }}
+
+        .hero-pattern {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #0C0A09;
+            background-image: radial-gradient(#44403C 0.5px, transparent 0.5px), radial-gradient(#44403C 0.5px, #0C0A09 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.2;
+        }
+
+        .gradient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -2;
+            pointer-events: none;
+        }
+        .orb-green {
+            top: -200px;
+            right: -200px;
+            width: 800px;
+            height: 800px;
+            background: rgba(74, 222, 128, 0.15); /* #4ADE80 */
+            mix-blend-mode: screen;
+        }
+        .orb-amber {
+            bottom: -200px;
+            left: -200px;
+            width: 600px;
+            height: 600px;
+            background: rgba(251, 191, 36, 0.1); /* #FBBF24 */
+            mix-blend-mode: screen;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; position: relative; z-index: 1; }
     </style>
 </head>
 <body>
+    <div class="gradient-orb orb-green"></div>
+    <div class="gradient-orb orb-amber"></div>
+    <div class="hero-pattern"></div>
+    
     <div class="container">
-        <div class="header">
-            <div>
-                <h1 style="color: #FBBF24; margin: 0;">ChaiMCP Test Report</h1>
-                <p style="color: #A8A29E; margin-top: 0.5rem;">Generated: {timestamp}</p>
+        <header class="nav-header">
+            <div class="brand">
+                <div class="brand-logo-bg">
+                   <i data-lucide="flask-conical" style="color: #FBBF24; width: 20px;"></i>
+                </div>
+                <div class="brand-text">mcp<span>ch.ai</span></div>
             </div>
-            <div style="text-align: right;">
-                <div class="metric" style="color: {'#4ADE80' if pass_rate == 100 else '#FBBF24'}">{pass_rate:.1f}%</div>
-                <div class="metric-label">Pass Rate</div>
+            <div class="report-meta">
+                <div>Test Report Generated</div>
+                <div style="color: white; margin-top: 4px;">{timestamp}</div>
             </div>
-        </div>
+        </header>
 
         <div class="stats-grid">
+            <div class="card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <div class="metric" style="color: {'#4ADE80' if pass_rate == 100 else '#FBBF24'}">{pass_rate:.1f}%</div>
+                <div class="metric-label">Pass Rate</div>
+                <div style="margin-top: 2rem; display: flex; gap: 2rem;">
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: white;">{total_tests}</div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-dim); text-transform: uppercase;">Total</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #4ADE80;">{passed_tests}</div>
+                        <div style="font-size: 0.75rem; color: var(--color-text-dim); text-transform: uppercase;">Passed</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
-                <h3>Test Results</h3>
+                <h3>Test Distribution</h3>
                 <div class="chart-container">
                     <canvas id="testChart"></canvas>
-                </div>
-                <div style="display: flex; justify-content: space-around; margin-top: 1rem; text-align: center;">
-                    <div><div class="metric">{total_tests}</div><div class="metric-label">Total</div></div>
-                    <div><div class="metric" style="color: #4ADE80">{passed_tests}</div><div class="metric-label">Passed</div></div>
-                    <div><div class="metric" style="color: #F87171">{failed_tests}</div><div class="metric-label">Failed</div></div>
                 </div>
             </div>
 
@@ -71,14 +133,19 @@ def generate_html_report(test_results, coverage_results):
                     <canvas id="coverageChart"></canvas>
                 </div>
                 <div style="text-align: center; margin-top: 1rem;">
-                    <div class="metric">{coverage_percent:.1f}%</div>
-                    <div class="metric-label">Total Coverage</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: white;">{coverage_percent:.1f}%</div>
+                    <div class="metric-label">Lines Covered</div>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <h3>Detailed Results</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h3>Detailed Results</h3>
+                <div style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">
+                    took {test_results.get('duration', 0):.2f}s
+                </div> 
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -91,75 +158,88 @@ def generate_html_report(test_results, coverage_results):
 """
     for test in test_results['tests']:
         status_class = f"status-{test['outcome']}"
+        outcome_icon = "check-circle" if test['outcome'] == 'passed' else "x-circle"
         nodeid = test['nodeid']
         name = nodeid.split("::")[-1]
         html_content += f"""
                     <tr>
-                        <td style="font-family: monospace;">{name}<br><span style="color: #666; font-size: 0.8em">{nodeid}</span></td>
-                        <td class="{status_class}">{test['outcome'].upper()}</td>
-                        <td>{test['setup']['duration'] + test['call']['duration'] + test['teardown']['duration']:.4f}s</td>
+                        <td style="color: #E5E7EB;">
+                            {name}
+                            <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px;">{nodeid}</div>
+                        </td>
+                        <td>
+                            <div class="{status_class}">
+                                <i data-lucide="{outcome_icon}" style="width: 16px;"></i>
+                                {test['outcome'].upper()}
+                            </div>
+                        </td>
+                        <td style="color: #9CA3AF;">{test['setup'].get('duration', 0) + test['call'].get('duration', 0) + test['teardown'].get('duration', 0):.4f}s</td>
                     </tr>"""
 
-    html_content += """
+    html_content += f"""
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // Test Results Chart
-        new Chart(document.getElementById('testChart'), {
+        lucide.createIcons();
+    
+        new Chart(document.getElementById('testChart'), {{
             type: 'doughnut',
-            data: {
+            data: {{
                 labels: ['Passed', 'Failed', 'Skipped'],
-                datasets: [{
-                    data: [%d, %d, %d],
+                datasets: [{{
+                    data: [{passed_tests}, {failed_tests}, {skipped_tests}],
                     backgroundColor: ['#4ADE80', '#F87171', '#9CA3AF'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
+                    borderColor: '#1C1917',
+                    borderWidth: 2
+                }}]
+            }},
+            options: {{
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { color: '#D6D3D1' } }
-                }
-            }
-        });
+                cutout: '70%',
+                plugins: {{
+                    legend: {{ position: 'right', labels: {{ color: '#D6D3D1', font: {{ family: 'IBM Plex Sans' }} }} }}
+                }}
+            }}
+        }});
 
-        // Coverage Chart
-        new Chart(document.getElementById('coverageChart'), {
+        new Chart(document.getElementById('coverageChart'), {{
             type: 'bar',
-            data: {
+            data: {{
                 labels: ['Coverage'],
-                datasets: [{
+                datasets: [{{
                     label: 'Percentage',
-                    data: [%f],
+                    data: [{coverage_percent}],
                     backgroundColor: ['#FBBF24'],
-                    borderRadius: 5
-                }]
-            },
-            options: {
+                    borderRadius: 8,
+                    barThickness: 40
+                }}]
+            }},
+            options: {{
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: {
-                    y: { 
+                scales: {{
+                    y: {{ 
                         beginAtZero: true, 
                         max: 100,
-                        grid: { color: '#444' },
-                        ticks: { color: '#D6D3D1' }
-                    },
-                    x: { display: false }
-                },
-                plugins: {
-                    legend: { display: false }
-                }
-            }
-        });
+                        grid: {{ color: 'rgba(255,255,255,0.05)' }},
+                        ticks: {{ color: '#A8A29E', font: {{ family: 'JetBrains Mono' }} }},
+                        border: {{ display: false }}
+                    }},
+                    x: {{ display: false, grid: {{ display: false }} }}
+                }},
+                plugins: {{
+                    legend: {{ display: false }}
+                }}
+            }}
+        }});
     </script>
 </body>
 </html>
-""" % (passed_tests, failed_tests, skipped_tests, coverage_percent)
+"""
 
     with open('test_report.html', 'w') as f:
         f.write(html_content)
