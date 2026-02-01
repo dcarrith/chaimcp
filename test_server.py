@@ -7,12 +7,25 @@ import os
 # Add src to path
 sys.path.append(os.path.abspath("src"))
 
-from chaimcp.main import mcp, get_blockchain_state, get_wallet_balance
+from chaimcp.main import mcp, get_blockchain_state, get_wallet_balance, EnvTokenVerifier
+
+class TestAuth(unittest.IsolatedAsyncioTestCase):
+    async def test_valid_token(self):
+        """Test EnvTokenVerifier with valid token."""
+        verifier = EnvTokenVerifier("secret-token")
+        token = await verifier.verify_token("secret-token")
+        self.assertIsNotNone(token)
+        self.assertEqual(token.token, "secret-token")
+        self.assertEqual(token.client_id, "unknown")
+
+    async def test_invalid_token(self):
+        """Test EnvTokenVerifier with invalid token."""
+        verifier = EnvTokenVerifier("secret-token")
+        token = await verifier.verify_token("wrong-token")
+        self.assertIsNone(token)
 
 class TestChaiMCP(unittest.TestCase):
     
-
-
     @patch("chaimcp.main.ChiaRpcClient")
     def test_get_blockchain_state(self, MockClient):
         """Test get_blockchain_state tool."""

@@ -140,6 +140,42 @@
                         </p>
                     </div>
 
+                    <!-- NPX (node) -->
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <i data-lucide="package" class="w-6 h-6 text-orange-400"></i>
+                            <h3 class="text-xl font-bold text-white">NPX (Local)</h3>
+                        </div>
+                        <p class="text-text/80 mb-4">
+                            If running via <code>npx</code>, use the command-based configuration. Note that if testing
+                            locally with the default self-signed certs (if enabled by environment), or just running via
+                            stdio (recommended for npx), the config is simple:
+                        </p>
+                        <div class="bg-[#0f0e0e] rounded-xl border border-white/10 overflow-hidden">
+                            <div
+                                class="flex justify-between items-center px-4 py-2 bg-[#1C1917] border-b border-white/5">
+                                <span class="text-xs text-stone-500 font-mono">json</span>
+                                <button class="text-xs text-secondary hover:text-white transition-colors"
+                                    onclick="navigator.clipboard.writeText(document.getElementById('config-npx').innerText)">Copy</button>
+                            </div>
+                            <pre id="config-npx" class="p-4 text-sm font-mono text-gray-300 overflow-x-auto"><code>{
+  "mcpServers": {
+    "chaimcp": {
+      "command": "npx",
+      "args": ["-y", "chaimcp"],
+      "env": {
+        "PYTHONPATH": "/path/to/your/venv/site-packages" 
+      }
+    }
+  }
+}</code></pre>
+                        </div>
+                        <p class="text-sm text-stone-500 mt-2">
+                            * <strong>Better yet:</strong> Run <code>npx .</code> inside the repo folder to test local
+                            changes.
+                        </p>
+                    </div>
+
                     <!-- Kubernetes / Remote -->
                     <div>
                         <div class="flex items-center gap-3 mb-4">
@@ -159,8 +195,9 @@
                             <pre id="config-remote" class="p-4 text-sm font-mono text-gray-300 overflow-x-auto"><code>{
   "mcpServers": {
     "chaimcp-k8s": {
-      "url": "http://localhost:8000/sse",
+      "url": "https://localhost:4443/sse",
       "transport": "sse",
+      "disableTlsVerify": true,
       "headers": {
         "Authorization": "Bearer YOUR_AUTH_TOKEN"
       }
@@ -170,7 +207,7 @@
                         </div>
                         <p class="text-sm text-stone-500 mt-2">
                             * Ensure you have port-forwarded the service (e.g.,
-                            <code>kubectl port-forward svc/chiamcp 8000:80</code>) or utilize an Ingress.
+                            <code>kubectl port-forward svc/chaimcp 4443:443</code>) or utilize an Ingress.
                         </p>
                     </div>
                 </div>

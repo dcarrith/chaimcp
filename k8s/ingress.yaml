@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chaimcp-ingress
+  annotations:
+    # Use the ClusterIssuer we created
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+
+    # Standard NGINX Ingress class
+    kubernetes.io/ingress.class: "nginx"
+
+    # Backend talks HTTPS (ChaiMCP creates its own self-signed cert)
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+
+    # Tell NGINX to trust the backend's self-signed cert
+    # (Since we are terminating valid SSL at Ingress, but backend is also encrypted)
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
+spec:
+  tls:
+    - hosts:
+        - YOUR_DOMAIN.com
+      secretName: chaimcp-tls
+  rules:
+    - host: YOUR_DOMAIN.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: chaimcp
+                port:
+                  number: 443

@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chiamcp
+  name: chaimcp
   labels:
-    app: chiamcp
+    app: chaimcp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: chiamcp
+      app: chaimcp
   template:
     metadata:
       labels:
-        app: chiamcp
+        app: chaimcp
     spec:
       containers:
-        - name: chiamcp
-          image: chiamcp:latest
-          imagePullPolicy: IfNotPresent
+        - name: chaimcp
+          image: chaimcp:latest
+          imagePullPolicy: Never
           ports:
-            - containerPort: 8000
+            - containerPort: 4443
           env:
             - name: MCP_AUTH_TOKEN
               valueFrom:
@@ -28,22 +28,26 @@ spec:
                   key: auth-token
             - name: CHIA_ROOT
               value: "/root/.chia/mainnet" # Internal path where we mount keys
-          volumeMounts:
-            # User needs to mount their keys here.
-            # This is an example assuming a Secret or HostPath
-            - name: chia-ssl
-              mountPath: /root/.chia/mainnet/config/ssl
-              readOnly: true
-            - name: chia-config
-              mountPath: /root/.chia/mainnet/config/config.yaml
-              subPath: config.yaml
-              readOnly: true
-      volumes:
-        - name: chia-ssl
-          hostPath:
-            path: /Users/yourusername/.chia/mainnet/config/ssl # UPDATE THIS
-        - name: chia-config
-          hostPath:
-            path: /Users/yourusername/.chia/mainnet/config/config.yaml # UPDATE THIS
+            - name: MCP_TRANSPORT
+              value: "http"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: MCP_PORT
+              value: "4443"
+      # volumeMounts:
+      # - name: chia-ssl
+      #   mountPath: /root/.chia/mainnet/config/ssl
+      #   readOnly: true
+      # - name: chia-config
+      #   mountPath: /root/.chia/mainnet/config/config.yaml
+      #   subPath: config.yaml
+      #   readOnly: true
+      # volumes:
+      # - name: chia-ssl
+      #   hostPath:
+      #     path: /Users/yourusername/.chia/mainnet/config/ssl # UPDATE THIS
+      # - name: chia-config
+      #   hostPath:
+      #     path: /Users/yourusername/.chia/mainnet/config/config.yaml # UPDATE THIS
       # For local testing, sharing network namespace allows connecting to localhost:8555
       # hostNetwork: true

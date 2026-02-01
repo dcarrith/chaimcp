@@ -100,7 +100,44 @@ def get_wallet_balance(wallet_id: int = 1) -> str:
 
 def main():
     """Entry point for the application script."""
-    mcp.run()
+    transport = os.environ.get("MCP_TRANSPORT", "stdio")
+    print(f"Starting ChaiMCP server with transport: {transport}")
+
+    if transport in ["sse", "http"]:
+        import uvicorn
+        
+        # Get settings from environment
+        port = int(os.environ.get("MCP_PORT", 8000))
+        host = "0.0.0.0"
+        ssl_keyfile = os.environ.get("SSL_KEY_FILE", "/app/server.key")
+        ssl_certfile = os.environ.get("SSL_CERT_FILE", "/app/server.crt")
+        
+        # Check if SSL files exist
+        ssl_config = {}
+        if os.path.exists(ssl_keyfile) and os.path.exists(ssl_certfile):
+             print(f"SSL enabled. Using cert: {ssl_certfile}")
+             ssl_config = {
+                 "ssl_keyfile": ssl_keyfile,
+                 "ssl_certfile": ssl_certfile
+             }
+        else:
+             print("SSL files not found, running HTTP only.")
+
+        if transport == "sse":
+            starlette_app = mcp.sse_app()
+        else:
+            # transport == "http"
+            starlette_app = mcp.streamable_http_app()
+        
+        uvicorn.run(
+            starlette_app, 
+            host=host, 
+            port=port, 
+            **ssl_config
+        )
+    else:
+        mcp.run(transport=transport)
 
 if __name__ == "__main__":
+    print("ChaiMCP module loaded")
     main()
