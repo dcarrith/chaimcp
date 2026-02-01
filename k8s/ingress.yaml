@@ -18,10 +18,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - YOUR_DOMAIN.com
+        - mcpch.ai
       secretName: chaimcp-tls
   rules:
-    - host: YOUR_DOMAIN.com
+    - host: mcpch.ai
       http:
         paths:
           - path: /
