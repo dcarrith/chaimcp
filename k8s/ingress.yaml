@@ -4,7 +4,7 @@ metadata:
   name: chaimcp-ingress
   annotations:
     # Use the ClusterIssuer we created
-    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 
     # Standard NGINX Ingress class
     kubernetes.io/ingress.class: "nginx"

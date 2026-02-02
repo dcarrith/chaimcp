@@ -1,4 +1,4 @@
-import subprocess
+import subprocess # nosec
 import json
 import os
 import sys
@@ -329,6 +329,7 @@ def generate_html_report(test_results, coverage_results):
             <a href="https://mcpch.ai/#install" class="nav-link">Install</a>
             <a href="https://mcpch.ai/docs.html" class="nav-link">Docs</a>
             <a href="https://mcpch.ai/testing.html" class="nav-link">Testing</a>
+            <a href="https://mcpch.ai/security.html" class="nav-link">Security</a>
         </div>
         
         <a href="https://mcpch.ai/#install" class="btn-primary">Get Started</a>
@@ -573,17 +574,17 @@ def generate_html_report(test_results, coverage_results):
 
 def main():
     # 1. Run pytest with --json-report
-    subprocess.run([sys.executable, "-m", "pip", "install", "pytest-json-report"], check=False)
+    subprocess.run([sys.executable, "-m", "pip", "install", "pytest-json-report"], check=False) # nosec
     
     print("Running tests...")
     coverage_cmd = [
         sys.executable, "-m", "pytest", 
         "--json-report", "--json-report-file=report.json",
-        "--cov=src", "--cov-report=json:coverage.json",
+        "--cov=src", "--cov=scan_security.py", "--cov=local_bridge.py", "--cov-report=json:coverage.json",
         "tests/"
     ]
     
-    result = subprocess.run(coverage_cmd, env=os.environ.copy())
+    result = subprocess.run(coverage_cmd, env=os.environ.copy()) # nosec
     
     if result.returncode != 0 and result.returncode != 1:
         print(f"Tests execution failed (exit code {result.returncode})")

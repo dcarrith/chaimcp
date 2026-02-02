@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChaiMCP Security Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #D4A373;   /* Chai/Latte tint */
+            --color-secondary: #CCD5AE; /* Soft Green */
+            --color-bg: #0C0A09;        /* Dark Warm Black */
+            --color-card: #1C1917;      /* Darker Card */
+            --color-text: #E7E5E4;      /* Warm Grey */
+            --color-text-dim: #A8A29E;
+            --color-border: rgba(255,255,255,0.08);
+            
+            /* Severity Colors */
+            --sev-critical: #EF4444;
+            --sev-high: #F97316;
+            --sev-medium: #F59E0B; 
+            --sev-low: #3B82F6;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            margin: 0;
+            padding-bottom: 4rem;
+        }
+        
+        .hero-pattern {
+            background-image: 
+                radial-gradient(at 100% 0%, rgba(204, 213, 174, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(212, 163, 115, 0.1) 0px, transparent 50%);
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .nav-link {
+            position: relative;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover {
+            color: var(--color-primary);
+        }
+        
+        .btn-primary {
+            background: var(--color-primary);
+            color: #1c1917;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 4px 12px rgba(212, 163, 115, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            margin-top: 100px;
+        }
+        
+        .card {
+            background: rgba(28, 25, 23, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .card:hover {
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 1rem;
+        }
+        
+        .severity-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .bg-critical { background: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .bg-high { background: rgba(249, 115, 22, 0.2); color: #FDBA74; border: 1px solid rgba(249, 115, 22, 0.3); }
+        .bg-medium { background: rgba(245, 158, 11, 0.2); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .bg-low { background: rgba(59, 130, 246, 0.2); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+        details > summary {
+            list-style: none;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        details > summary::-webkit-details-marker { display: none; }
+        details > summary:hover { background: rgba(255,255,255,0.03); }
+        
+        .code-block {
+            margin-top: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            font-size: 0.85rem;
+        }
+        
+        /* Chart container override */
+        .chart-container {
+            position: relative; 
+            height: 160px; 
+            width: 100%; 
+            display: flex; 
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-background">
+    <div class="hero-pattern"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-4 left-4 right-4 max-w-[1600px] mx-auto z-50 bg-[#1C1917]/80 backdrop-blur-md rounded-xl shadow-sm border border-white/5 px-8 py-4 flex items-center justify-between">
+        <a href="https://mcpch.ai/" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center">
+                <img src="./assets/chai_logo.svg" alt="Chai Logo" class="w-6 h-6">
+            </div>
+            <span class="font-mono font-bold text-xl tracking-tight text-white">mcp<span class="text-secondary">ch.ai</span></span>
+        </a>
+        <div class="hidden md:flex items-center gap-8">
+            <a href="https://mcpch.ai/#features" class="nav-link">Features</a>
+            <a href="https://mcpch.ai/#install" class="nav-link">Install</a>
+            <a href="https://mcpch.ai/docs.html" class="nav-link">Docs</a>
+            <a href="https://mcpch.ai/testing.html" class="nav-link">Testing</a>
+            <a href="https://mcpch.ai/security.html" class="nav-link" style="color: var(--color-primary);">Security</a>
+        </div>
+        <a href="https://mcpch.ai/#install" class="btn-primary">Get Started</a>
+    </nav>
+
+    <div class="container">
+        <div class="report-header">
+            <div>
+                <h1 style="font-size: 2rem; font-weight: 700; color: white; margin: 0;">Security Scan Report</h1>
+                <p style="color: var(--color-text-dim); margin-top: 0.5rem;">Automated Analysis Pipeline</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="color: var(--color-text-dim); font-size: 0.75rem; text-transform: uppercase;">Generated</div>
+                <div style="color: white; font-family: 'JetBrains Mono';">2026-02-01 20:31:15</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <!-- Score Card -->
+            <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                <h3 style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Security Score</h3>
+                <div style="font-size: 4rem; font-weight: 800; color: #F87171; line-height: 1;">6</div>
+                <div style="font-size: 0.9rem; color: var(--color-text-dim); margin-top: 0.5rem;">Pipeline Health</div>
+            </div>
+
+            <!-- Vulnerabilities Chart -->
+            <div class="card">
+                <h3 style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Vulnerabilities</h3>
+                <div class="chart-container">
+                    <canvas id="vulnChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Scanner Status -->
+            <div class="card">
+                <h3 style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Scanners Run</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                        <span style="font-weight: 500;">Bandit (SAST)</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">39 Issues</span>
+                            <i data-lucide="check-circle" style="color: #4ADE80; width: 16px;"></i>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                        <span style="font-weight: 500;">Safety (Deps)</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">0 Issues</span>
+                            <i data-lucide="check-circle" style="color: #4ADE80; width: 16px;"></i>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                        <span style="font-weight: 500;">NPM Audit</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">0 Issues</span>
+                            <i data-lucide="check-circle" style="color: #4ADE80; width: 16px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bandit Findings -->
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; border-left: 4px solid var(--color-primary); padding-left: 1rem;">Code Analysis Findings</h2>
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem;">
+    
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Consider possible security implications associated with the subprocess module.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./generate_report.py:1
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">1 import subprocess
+2 import json
+3 import os
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./generate_report.py:577
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">576     # 1. Run pytest with --json-report
+577     subprocess.run([sys.executable, "-m", "pip", "install", "pytest-json-report"], check=False)
+578     
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./generate_report.py:587
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">586     
+587     result = subprocess.run(coverage_cmd, env=os.environ.copy())
+588     
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Possible hardcoded password: 'my-secret-token'</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./local_bridge.py:10
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>MEDIUM</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">9 TARGET_URL = "https://localhost:4443/sse"
+10 AUTH_TOKEN = "my-secret-token"
+11 
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-high">HIGH</span>
+                        <span style="font-weight: 500;">Call to requests with verify=False disabling SSL certificate checks, security issue.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./local_bridge.py:27
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">26                 stream=True, 
+27                 verify=False,
+28                 timeout=None
+29             )
+30             
+31             # Send response status code
+32             self.send_response(resp.status_code)
+33             
+34             # Send headers
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-medium">MEDIUM</span>
+                        <span style="font-weight: 500;">Call to requests with timeout set to None</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./local_bridge.py:23
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>LOW</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">22             # Make the request to the backend (insecure=True)
+23             resp = requests.get(
+24                 TARGET_URL, 
+25                 headers=headers, 
+26                 stream=True, 
+27                 verify=False,
+28                 timeout=None
+29             )
+30             
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-high">HIGH</span>
+                        <span style="font-weight: 500;">Call to requests with verify=False disabling SSL certificate checks, security issue.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./local_bridge.py:65
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">64                 stream=True,
+65                 verify=False
+66             )
+67              
+68             self.send_response(resp.status_code)
+69             for key, val in resp.headers.items():
+70                 if key.lower() not in ['transfer-encoding', 'content-encoding', 'connection']:
+71                      self.send_header(key, val)
+72             self.end_headers()
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-medium">MEDIUM</span>
+                        <span style="font-weight: 500;">Call to requests without timeout</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./local_bridge.py:60
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>LOW</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">59             
+60             resp = requests.post(
+61                 TARGET_URL.replace("/sse", self.path), # Adjust path if needed
+62                 data=body,
+63                 headers=headers,
+64                 stream=True,
+65                 verify=False
+66             )
+67              
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Consider possible security implications associated with the subprocess module.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./scan_security.py:1
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">1 import subprocess
+2 import json
+3 import os
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Starting a process with a partial executable path</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./scan_security.py:14
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">13         # -x: Exclude paths (venv, tests)
+14         result = subprocess.run(
+15             ['bandit', '-f', 'json', '-r', '.', '-x', './.venv,./tests', '--exit-zero', '-q'],
+16             capture_output=True,
+17             text=True
+18         )
+19         return json.loads(result.stdout)
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./scan_security.py:14
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">13         # -x: Exclude paths (venv, tests)
+14         result = subprocess.run(
+15             ['bandit', '-f', 'json', '-r', '.', '-x', './.venv,./tests', '--exit-zero', '-q'],
+16             capture_output=True,
+17             text=True
+18         )
+19         return json.loads(result.stdout)
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Starting a process with a partial executable path</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./scan_security.py:30
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">29         # --full-report: Full report
+30         result = subprocess.run(
+31             ['safety', 'check', '--json'],
+32             capture_output=True,
+33             text=True
+34         )
+35         output = result.stdout
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./scan_security.py:30
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">29         # --full-report: Full report
+30         result = subprocess.run(
+31             ['safety', 'check', '--json'],
+32             capture_output=True,
+33             text=True
+34         )
+35         output = result.stdout
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Starting a process with a partial executable path</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./scan_security.py:50
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">49         # --json: Output JSON
+50         result = subprocess.run(
+51             ['npm', 'audit', '--json'],
+52             capture_output=True,
+53             text=True
+54         )
+55         return json.loads(result.stdout)
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./scan_security.py:50
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">49         # --json: Output JSON
+50         result = subprocess.run(
+51             ['npm', 'audit', '--json'],
+52             capture_output=True,
+53             text=True
+54         )
+55         return json.loads(result.stdout)
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./skills/mcp-builder/scripts/evaluation.py:13
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">12 import traceback
+13 import xml.etree.ElementTree as ET
+14 from pathlib import Path
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-medium">MEDIUM</span>
+                        <span style="font-weight: 500;">Using xml.etree.ElementTree.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./skills/mcp-builder/scripts/evaluation.py:59
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">58     try:
+59         tree = ET.parse(file_path)
+60         root = tree.getroot()
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-medium">MEDIUM</span>
+                        <span style="font-weight: 500;">Probable insecure usage of temp file/directory.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./skills/webapp-testing/examples/element_discovery.py:37
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>MEDIUM</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">36     # Take screenshot for visual reference
+37     page.screenshot(path='/tmp/page_discovery.png', full_page=True)
+38     print("\nScreenshot saved to /tmp/page_discovery.png")
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Consider possible security implications associated with the subprocess module.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./skills/webapp-testing/scripts/with_server.py:17
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">16 
+17 import subprocess
+18 import socket
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-high">HIGH</span>
+                        <span style="font-weight: 500;">subprocess call with shell=True identified, security issue.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./skills/webapp-testing/scripts/with_server.py:71
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">70                 server['cmd'],
+71                 shell=True,
+72                 stdout=subprocess.PIPE,
+73                 stderr=subprocess.PIPE
+74             )
+75             server_processes.append(process)
+76 
+77             # Wait for this server to be ready
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./skills/webapp-testing/scripts/with_server.py:88
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">87         print(f"Running: {' '.join(args.command)}\n")
+88         result = subprocess.run(args.command)
+89         sys.exit(result.returncode)
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-medium">MEDIUM</span>
+                        <span style="font-weight: 500;">Possible binding to all interfaces.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./src/chaimcp/main.py:111
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>MEDIUM</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">110         port = int(os.environ.get("MCP_PORT", 8000))
+111         host = "0.0.0.0"
+112         ssl_keyfile = os.environ.get("SSL_KEY_FILE", "/app/server.key")
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Consider possible security implications associated with the subprocess module.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_auth.py:1
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">1 import subprocess
+2 import time
+3 import sys
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Starting a process with a partial executable path</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_auth.py:7
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">6     # Start port-forward
+7     pf = subprocess.Popen(["kubectl", "port-forward", "svc/chiamcp", "8000:8000"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+8     time.sleep(3) # Wait for connection
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_auth.py:7
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">6     # Start port-forward
+7     pf = subprocess.Popen(["kubectl", "port-forward", "svc/chiamcp", "8000:8000"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+8     time.sleep(3) # Wait for connection
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Starting a process with a partial executable path</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_auth.py:13
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">12         try:
+13             res = subprocess.run(["curl", "-i", "-s", "-o", "/dev/null", "-w", "%{http_code}", "http://localhost:8000/sse"], capture_output=True, text=True, timeout=5)
+14             print(f"No Token Response Code: {res.stdout.strip()}")
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_auth.py:13
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">12         try:
+13             res = subprocess.run(["curl", "-i", "-s", "-o", "/dev/null", "-w", "%{http_code}", "http://localhost:8000/sse"], capture_output=True, text=True, timeout=5)
+14             print(f"No Token Response Code: {res.stdout.strip()}")
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Starting a process with a partial executable path</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_auth.py:25
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">24             # We use timeout=2 because success means stream opens (hangs)
+25             subprocess.run(["curl", "-i", "-H", "Authorization: Bearer my-secret-token", "http://localhost:8000/sse"], timeout=2, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+26             print("FAIL: Connection closed immediately (unexpected for SSE).")
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_auth.py:25
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">24             # We use timeout=2 because success means stream opens (hangs)
+25             subprocess.run(["curl", "-i", "-H", "Authorization: Bearer my-secret-token", "http://localhost:8000/sse"], timeout=2, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+26             print("FAIL: Connection closed immediately (unexpected for SSE).")
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Consider possible security implications associated with the subprocess module.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_https.py:1
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">1 import subprocess
+2 import time
+3 import sys
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Starting a process with a partial executable path</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_https.py:11
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">10     # Start port-forward
+11     pf = subprocess.Popen(["kubectl", "port-forward", "svc/chiamcp", "4443:4443"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+12     time.sleep(3) # Wait for connection
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_https.py:11
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">10     # Start port-forward
+11     pf = subprocess.Popen(["kubectl", "port-forward", "svc/chiamcp", "4443:4443"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+12     time.sleep(3) # Wait for connection
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Starting a process with a partial executable path</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_https.py:18
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">17             # -k for insecure/self-signed
+18             res = subprocess.run(["curl", "-k", "-i", "-s", "-o", "/dev/null", "-w", "%{http_code}", "https://localhost:4443/sse"], capture_output=True, text=True, timeout=5)
+19             print(f"No Token Response Code: {res.stdout.strip()}")
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_https.py:18
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">17             # -k for insecure/self-signed
+18             res = subprocess.run(["curl", "-k", "-i", "-s", "-o", "/dev/null", "-w", "%{http_code}", "https://localhost:4443/sse"], capture_output=True, text=True, timeout=5)
+19             print(f"No Token Response Code: {res.stdout.strip()}")
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-high">HIGH</span>
+                        <span style="font-weight: 500;">Call to requests with verify=False disabling SSL certificate checks, security issue.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_https.py:30
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">29             # We use python requests here for better control, verified=False
+30             res = requests.get('https://localhost:4443/sse', headers={'Authorization': 'Bearer my-secret-token'}, stream=True, timeout=2, verify=False)
+31             print(f"Status Code: {res.status_code}")
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Consider possible security implications associated with the subprocess module.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_rename.py:1
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">1 import subprocess
+2 import time
+3 import requests
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">Starting a process with a partial executable path</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_rename.py:10
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">9     # Forward local 4443 to service port 443
+10     pf = subprocess.Popen(["kubectl", "port-forward", "svc/chaimcp", "4443:443"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+11     time.sleep(3)
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-low">LOW</span>
+                        <span style="font-weight: 500;">subprocess call - check for execution of untrusted input.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_rename.py:10
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">9     # Forward local 4443 to service port 443
+10     pf = subprocess.Popen(["kubectl", "port-forward", "svc/chaimcp", "4443:443"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+11     time.sleep(3)
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-high">HIGH</span>
+                        <span style="font-weight: 500;">Call to requests with verify=False disabling SSL certificate checks, security issue.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./verify_rename.py:16
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>HIGH</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">15         # -k for insecure
+16         res = requests.get('https://localhost:4443/sse', verify=False, timeout=2)
+17         print(f"Status: {res.status_code}")
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        </div>
+
+        <!-- Safety Findings -->
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; border-left: 4px solid var(--color-secondary); padding-left: 1rem;">Dependency Findings</h2>
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem;">
+    <div class="card" style="text-align: center; color: var(--color-text-dim);">No dependency vulnerabilities found. 🎉</div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        Prism.highlightAll();
+        
+        // Vuln Chart
+        new Chart(document.getElementById('vulnChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['High', 'Medium', 'Low', 'Dependencies'],
+                datasets: [{
+                    data: [5, 5, 29, 0],
+                    backgroundColor: ['#F97316', '#F59E0B', '#3B82F6', '#A8A29E'],
+                    borderWidth: 0,
+                    cutout: '75%'
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { position: 'right', labels: { color: '#A8A29E', font: { size: 10 } } } } 
+            }
+        });
+    </script>
+</body>
+</html>

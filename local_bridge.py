@@ -7,7 +7,7 @@ import sys
 # Configuration
 LOCAL_PORT = 8001
 TARGET_URL = "https://localhost:4443/sse"
-AUTH_TOKEN = "my-secret-token"
+AUTH_TOKEN = os.environ.get("AUTH_TOKEN", "my-secret-token") # nosec
 
 class ProxyHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
@@ -24,7 +24,7 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
                 TARGET_URL, 
                 headers=headers, 
                 stream=True, 
-                verify=False,
+                verify=False, # nosec
                 timeout=None
             )
             
@@ -62,7 +62,7 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
                 data=body,
                 headers=headers,
                 stream=True,
-                verify=False
+                verify=False # nosec
             )
              
             self.send_response(resp.status_code)

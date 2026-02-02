@@ -17,6 +17,15 @@ else
     exit 1
 fi
 
+# Run Security Scan
+echo -e "${YELLOW}🛡️  Running Security Scan...${NC}"
+if python3 scan_security.py; then
+    echo -e "${GREEN}✅ Security scan complete!${NC}"
+else
+    echo -e "${RED}❌ Security scan failed!${NC}"
+    exit 1
+fi
+
 echo -e "${GREEN}🐳 Building Docker image...${NC}"
 docker build -t chaimcp:latest -f k8s/Dockerfile .
 

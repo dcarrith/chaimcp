@@ -1,0 +1,55 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: default
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-chaimcp-egress-chia
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: chaimcp
+  policyTypes:
+    - Egress
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: ingress-nginx-controller # Adjust based on actual ingress controller
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 4443
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: chia
+      ports:
+        - protocol: TCP
+          port: 8555 # Chia Node RPC
+        - protocol: TCP
+          port: 9256 # Chia Wallet RPC
+        - protocol: TCP
+          port: 8562 # Chia DataLayer RPC
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53 # DNS
+        - protocol: TCP
+          port: 53 # DNS
