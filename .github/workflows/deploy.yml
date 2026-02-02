@@ -46,6 +46,7 @@ jobs:
       - name: Run Tests and Generate Report
         run: |
           python3 generate_report.py
+          python3 scan_security.py
 
       - name: Install dependencies
         run: npm ci

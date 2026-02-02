@@ -1,0 +1,15 @@
+{
+    "theme": "dark",
+    "securityLevel": "loose",
+    "startOnLoad": true,
+    "flowchart": {
+        "htmlLabels": true,
+        "useMaxWidth": false,
+        "curve": "basis"
+    },
+    "look": "handDrawn",
+    "themeVariables": {
+        "fontSize": "16px",
+        "fontFamily": "IBM Plex Sans"
+    }
+}

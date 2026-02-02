@@ -25,7 +25,7 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
                 headers=headers, 
                 stream=True, 
                 verify=False, # nosec
-                timeout=None
+                timeout=30
             )
             
             # Send response status code
@@ -62,7 +62,8 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
                 data=body,
                 headers=headers,
                 stream=True,
-                verify=False # nosec
+                verify=False, # nosec
+                timeout=30
             )
              
             self.send_response(resp.status_code)

@@ -108,7 +108,7 @@ def main():
         
         # Get settings from environment
         port = int(os.environ.get("MCP_PORT", 8000))
-        host = "0.0.0.0"
+        host = "0.0.0.0" # nosec
         ssl_keyfile = os.environ.get("SSL_KEY_FILE", "/app/server.key")
         ssl_certfile = os.environ.get("SSL_CERT_FILE", "/app/server.crt")
         

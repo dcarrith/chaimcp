@@ -23,7 +23,7 @@ This skill standardizes the deployment and verification process for the ChaiMCP 
 
 ### 1. Local Deployment (Kind)
 
-The `deploy_local.sh` script automates the test-build-deploy loop.
+The `deploy_local.sh` script automates the test-scan-build-deploy loop.
 
 ```bash
 ./deploy_local.sh
@@ -31,10 +31,11 @@ The `deploy_local.sh` script automates the test-build-deploy loop.
 
 **What it does:**
 1.  Runs Unit Tests (`generate_report.py`). **ABORTS** if tests fail.
-2.  Builds Docker image `chaimcp:latest`.
-3.  Loads image into `higgs-cluster`.
-4.  Applies Kubernetes manifests (Infrastructure & Application).
-5.  Restarts the `chaimcp` deployment to pick up changes.
+2.  Runs Security Scan (`scan_security.py`). **ABORTS** if critical issues are found (optional but recommended).
+3.  Builds Docker image `chaimcp:latest`.
+4.  Loads image into `higgs-cluster`.
+5.  Applies Kubernetes manifests (Infrastructure & Application).
+6.  Restarts the `chaimcp` deployment to pick up changes.
 
 ### 2. Remote Deployment (GitHub Pages)
 
@@ -50,8 +51,9 @@ git push origin main
 1.  Triggers `.github/workflows/deploy.yml`.
 2.  Sets up Python & Node environment.
 3.  Runs Unit Tests & Generates `testing.html`.
-4.  Builds the static site.
-5.  Deploys artifacts (including the test report) to GitHub Pages.
+4.  Runs Security Scan & Generates `security.html`.
+5.  Builds the static site.
+6.  Deploys artifacts (including test and security reports) to GitHub Pages.
 
 ### 3. Verification & Recording
 
@@ -60,17 +62,18 @@ After deployment, use the **Browser Subagent** to verify the live sites.
 **Tool Call:** `browser_subagent`
 
 **Task Description:**
-> "Navigate to https://mcpch.ai/, https://mcpch.ai/docs.html, and https://mcpch.ai/testing.html. Verify that the pages load correctly, the SEO meta tags are present (view-source), and the Test Report shows a 100% pass rate. Take screenshots of each page."
+> "Navigate to https://mcpch.ai/, https://mcpch.ai/docs.html, https://mcpch.ai/testing.html, and https://mcpch.ai/security.html. Verify that the pages load correctly, the SEO meta tags are present (view-source), the Test Report shows a 100% pass rate, and the Security Score is acceptable (Green/Yellow). Take screenshots of each page."
 
 **Verification Checklist:**
 -   [ ] **Home Page**: Check for "Brewed for Blockchain" text and correct meta tags.
 -   [ ] **Docs Page**: Ensure documentation loads.
 -   [ ] **Test Report**: Confirm 100% Pass Rate and visuals.
+-   [ ] **Security Report**: Confirm report exists and score is healthy.
 -   [ ] **Recording**: The browser subagent automatically records the session. Embed this recording in the "Walkthrough" artifact if confirming success to the user.
 
 ## Troubleshooting
 
 -   **Tests Fail**: Check `testing.html` locally or in the console output. Fix the code before deploying.
+-   **Security Scan Fails**: Check `security.html`. Fix High/Critical vulnerabilities.
 -   **Kind Deployment Fails**: Ensure `higgs-cluster` is running (`kind get clusters`).
 -   **Remote Deploy Fails**: Check GitHub Actions "Actions" tab for logs.
-

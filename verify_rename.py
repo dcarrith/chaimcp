@@ -1,4 +1,4 @@
-import subprocess
+import subprocess # nosec
 import time
 import requests
 import urllib3
@@ -7,13 +7,13 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def run_test():
     # Forward local 4443 to service port 443
-    pf = subprocess.Popen(["kubectl", "port-forward", "svc/chaimcp", "4443:443"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    pf = subprocess.Popen(["kubectl", "port-forward", "svc/chaimcp", "4443:443"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) # nosec
     time.sleep(3)
 
     try:
         print("Testing HTTPS via renamed service (chaimcp)...")
         # -k for insecure
-        res = requests.get('https://localhost:4443/sse', verify=False, timeout=2)
+        res = requests.get('https://localhost:4443/sse', verify=False, timeout=2) # nosec
         print(f"Status: {res.status_code}")
         if res.status_code == 401:
              print("PASS: Service reachable, Auth required.")

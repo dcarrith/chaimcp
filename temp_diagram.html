@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K8s Network Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: transparent;
+            /* Transparent background for capture */
+            margin: 0;
+            padding: 100px;
+            /* Initial padding */
+            font-family: 'IBM Plex Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #diagram-container {
+            display: inline-block;
+            /* Shrink to fit content */
+            padding: 100px;
+            /* Requested padding */
+        }
+
+        .img-icon {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            vertical-align: middle;
+            border-radius: 4px;
+            /* Optional: slight rounding */
+        }
+
+        /* Custom styles for Mermaid nodes */
+        .node rect,
+        .node circle,
+        .node polygon,
+        .node path {
+            stroke-width: 2px;
+        }
+
+        /* Prevent focus rings */
+        * {
+            outline: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="diagram-container">
+        <div class="mermaid">
+            %%{init: {'theme': 'dark', 'look': 'handDrawn', 'themeVariables': { 'fontSize': '16px', 'fontFamily': 'IBM
+            Plex Sans' }}}%%
+            flowchart TB
+            classDef box fill:#292524,stroke:#57534e,stroke-width:2px,color:#fff
+            classDef node fill:#1C1917,stroke:#FBBF24,stroke-width:2px,color:#fff
+            classDef pod fill:#1C1917,stroke:#4ADE80,stroke-width:2px,color:#fff
+            classDef ext fill:#1C1917,stroke:#a8a29e,stroke-width:2px,stroke-dasharray: 5 5,color:#fff
+
+            subgraph ExternalWorld ["External World"]
+            direction TB
+            style ExternalWorld fill:#1c1917,stroke:#57534e,color:#fff,stroke-dasharray: 5 5
+            UserTraffic["<i class='fa fa-users'></i> User Traffic"]:::node
+            LetsEncrypt["<i class='fa fa-lock'></i> Let's Encrypt ACME"]:::ext
+            Internet["<i class='fa fa-globe'></i> Internet / External"]:::ext
+            end
+
+            subgraph ClusterCertManager ["Cluster: cert-manager"]
+            direction TB
+            style ClusterCertManager fill:#292524,stroke:#57534e,color:#fff
+            CertController["<i class='fa fa-certificate'></i> Controller"]:::node
+            end
+
+            subgraph ClusterDefault ["Cluster: default namespace"]
+            direction TB
+            style ClusterDefault fill:#292524,stroke:#57534e,color:#fff
+            Ingress["<i class='fa fa-arrow-right-to-bracket'></i> Ingress Controller"]:::node
+            PodChai["<img src='./assets/favicon.png' class='img-icon' /> Pod: chaimcp"]:::pod
+            OtherPods["<i class='fa fa-cubes'></i> Other Pods"]:::ext
+            end
+
+            subgraph ClusterKubeSystem ["Cluster: kube-system"]
+            direction TB
+            style ClusterKubeSystem fill:#292524,stroke:#57534e,color:#fff
+            CoreDNS["<i class='fa fa-network-wired'></i> CoreDNS"]:::node
+            end
+
+            subgraph ClusterChia ["Cluster: chia namespace"]
+            direction TB
+            style ClusterChia fill:#292524,stroke:#57534e,color:#fff
+            SvcNode["<i class='fa fa-leaf'></i> Service: chia-node"]:::pod
+            SvcWallet["<i class='fa fa-wallet'></i> Service: chia-wallet"]:::pod
+            SvcData["<i class='fa fa-database'></i> Service: chia-datalayer"]:::pod
+            end
+
+            UserTraffic -- "HTTPS" --> Ingress
+            Ingress -- "ACME Challenge" --> LetsEncrypt
+
+            CertController -.-> Ingress
+
+            Ingress -- "Allow: 4443" --> PodChai
+
+            PodChai --> CoreDNS
+            PodChai --> SvcNode
+            PodChai --> SvcWallet
+            PodChai --> SvcData
+
+            PodChai -. "Block: Deny All" .-> Internet
+            OtherPods -. "Block: Deny All" .-> PodChai
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark'
+        });
+    </script>
+</body>
+
+</html>

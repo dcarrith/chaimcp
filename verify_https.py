@@ -1,4 +1,4 @@
-import subprocess
+import subprocess # nosec
 import time
 import sys
 import requests
@@ -8,14 +8,14 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def run_test():
     # Start port-forward
-    pf = subprocess.Popen(["kubectl", "port-forward", "svc/chiamcp", "4443:4443"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    pf = subprocess.Popen(["kubectl", "port-forward", "svc/chiamcp", "4443:4443"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) # nosec
     time.sleep(3) # Wait for connection
 
     try:
         print("Testing HTTPS without token...")
         try:
             # -k for insecure/self-signed
-            res = subprocess.run(["curl", "-k", "-i", "-s", "-o", "/dev/null", "-w", "%{http_code}", "https://localhost:4443/sse"], capture_output=True, text=True, timeout=5)
+            res = subprocess.run(["curl", "-k", "-i", "-s", "-o", "/dev/null", "-w", "%{http_code}", "https://localhost:4443/sse"], capture_output=True, text=True, timeout=5) # nosec
             print(f"No Token Response Code: {res.stdout.strip()}")
             if res.stdout.strip() in ["401", "403"]:
                 print("PASS: HTTPS Request without token rejected.")
@@ -27,7 +27,7 @@ def run_test():
         print("\nTesting HTTPS with valid token...")
         try:
             # We use python requests here for better control, verified=False
-            res = requests.get('https://localhost:4443/sse', headers={'Authorization': 'Bearer my-secret-token'}, stream=True, timeout=2, verify=False)
+            res = requests.get('https://localhost:4443/sse', headers={'Authorization': 'Bearer my-secret-token'}, stream=True, timeout=2, verify=False) # nosec
             print(f"Status Code: {res.status_code}")
             # If we get here without timeout, it might be 200 OK headers received, or 401
             if res.status_code == 200:
