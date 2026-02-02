@@ -49,7 +49,7 @@ git push origin main
 **What it does:**
 1.  Triggers `.github/workflows/deploy.yml`.
 2.  Sets up Python & Node environment.
-3.  Runs Unit Tests & Generates `test_report.html`.
+3.  Runs Unit Tests & Generates `testing.html`.
 4.  Builds the static site.
 5.  Deploys artifacts (including the test report) to GitHub Pages.
 
@@ -60,7 +60,7 @@ After deployment, use the **Browser Subagent** to verify the live sites.
 **Tool Call:** `browser_subagent`
 
 **Task Description:**
-> "Navigate to https://mcpch.ai/, https://mcpch.ai/docs.html, and https://mcpch.ai/test_report.html. Verify that the pages load correctly, the SEO meta tags are present (view-source), and the Test Report shows a 100% pass rate. Take screenshots of each page."
+> "Navigate to https://mcpch.ai/, https://mcpch.ai/docs.html, and https://mcpch.ai/testing.html. Verify that the pages load correctly, the SEO meta tags are present (view-source), and the Test Report shows a 100% pass rate. Take screenshots of each page."
 
 **Verification Checklist:**
 -   [ ] **Home Page**: Check for "Brewed for Blockchain" text and correct meta tags.
@@ -70,7 +70,7 @@ After deployment, use the **Browser Subagent** to verify the live sites.
 
 ## Troubleshooting
 
--   **Tests Fail**: Check `test_report.html` locally or in the console output. Fix the code before deploying.
+-   **Tests Fail**: Check `testing.html` locally or in the console output. Fix the code before deploying.
 -   **Kind Deployment Fails**: Ensure `higgs-cluster` is running (`kind get clusters`).
 -   **Remote Deploy Fails**: Check GitHub Actions "Actions" tab for logs.
 

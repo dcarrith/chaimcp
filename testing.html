@@ -1,0 +1,2579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChaiMCP Unit Test Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js"></script>
+    <style>
+        :root {
+            --color-background: #0C0A09; 
+            --color-surface: #1C1917;
+            --color-primary: #FBBF24;
+            --color-secondary: #4ADE80;
+            --color-cta: #F59E0B;
+            --color-text: #F3F4F6;
+            --color-text-dim: #A8A29E;
+            --color-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        body { 
+            font-family: 'IBM Plex Sans', sans-serif; 
+            background-color: #0C0A09; 
+            color: var(--color-text); 
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .hero-pattern {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #0C0A09;
+            background-image: radial-gradient(#44403C 0.5px, transparent 0.5px), radial-gradient(#44403C 0.5px, #0C0A09 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.2;
+        }
+
+        .gradient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -2;
+            pointer-events: none;
+        }
+        .orb-green {
+            top: -200px;
+            right: -200px;
+            width: 800px;
+            height: 800px;
+            background: rgba(74, 222, 128, 0.15); /* #4ADE80 */
+            mix-blend-mode: screen;
+        }
+        .orb-amber {
+            bottom: -200px;
+            left: -200px;
+            width: 600px;
+            height: 600px;
+            background: rgba(251, 191, 36, 0.1); /* #FBBF24 */
+            mix-blend-mode: screen;
+        }
+
+        /* Container with extra top padding for fixed header */
+        .container { max-width: 1400px; margin: 0 auto; padding: 8rem 2rem 4rem 2rem; position: relative; z-index: 1; }
+        
+        /* Fixed Navigation Header */
+        .fixed-nav {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            right: 1rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            z-index: 50;
+            background-color: rgba(28, 25, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .brand-logo-bg {
+            width: 32px; height: 32px;
+            background: rgba(251, 191, 36, 0.2);
+            border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .brand-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.025em;
+            color: white;
+        }
+        
+        .brand-text span { color: var(--color-primary); }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.15s;
+        }
+        .nav-link:hover { color: var(--color-primary); }
+        
+        .btn-primary {
+            background-color: var(--color-cta);
+            color: black;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            display: inline-block;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            opacity: 0.9;
+        }
+        
+        .report-meta { text-align: right; color: var(--color-text-dim); font-size: 0.875rem; margin-top: 1rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
+
+        /* 3-Column Grid Layout */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 2rem; 
+            margin-bottom: 3rem; 
+        }
+        
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid > div:last-child { grid-column: span 2; }
+            .nav-links-desktop { display: none; }
+        }
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .stats-grid > div:last-child { grid-column: span 1; }
+        }
+        
+        .card { 
+            background: rgba(28, 25, 23, 0.6);
+            backdrop-filter: blur(12px);
+            padding: 2rem; 
+            border-radius: 16px; 
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            background: rgba(28, 25, 23, 0.8);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        h3 { margin-top: 0; font-size: 1.25rem; color: white; margin-bottom: 1.5rem; font-weight: 600; letter-spacing: -0.01em; }
+
+        .chart-container { position: relative; height: 200px; display: flex; justify-content: center; }
+        
+        /* Table Styles */
+        .test-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 0; }
+        .test-table th { 
+            text-align: left; 
+            padding: 1rem 1.5rem; 
+            border-bottom: 1px solid var(--color-border); 
+            color: var(--color-text-dim); 
+            font-weight: 500; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+        }
+        .test-table td { 
+            padding: 1.25rem 1.5rem; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            vertical-align: top;
+        }
+        .test-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+        
+        /* Expandable Rows */
+        details > summary {
+            list-style: none;
+            cursor: pointer;
+            outline: none;
+        }
+        details > summary::-webkit-details-marker { display: none; }
+        
+        .test-details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .timeline-bar {
+            display: flex;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+            background: #333;
+        }
+        .segment { height: 100%; }
+        
+        .code-block {
+            margin-top: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            font-size: 0.85rem;
+        }
+        
+        .status-passed { color: #4ADE80; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .status-failed { color: #F87171; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        
+        .metric { font-size: 3rem; font-weight: 700; margin: 0.5rem 0; color: white; line-height: 1; }
+        .metric-label { color: var(--color-text-dim); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 600; margin-top: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="gradient-orb orb-green"></div>
+    <div class="gradient-orb orb-amber"></div>
+    <div class="hero-pattern"></div>
+    
+    <!-- Fixed Navigation -->
+    <nav class="fixed-nav">
+        <div style="display: flex; items-center; gap: 1rem;">
+            <a href="https://mcpch.ai/" class="brand">
+                <div class="brand-logo-bg">
+                   <i data-lucide="flask-conical" style="color: #FBBF24; width: 20px;"></i>
+                </div>
+                <div class="brand-text">mcp<span>ch.ai</span></div>
+            </a>
+        </div>
+        
+        <div class="nav-links nav-links-desktop">
+            <a href="https://mcpch.ai/#features" class="nav-link">Features</a>
+            <a href="https://mcpch.ai/#install" class="nav-link">Install</a>
+            <a href="https://mcpch.ai/docs.html" class="nav-link">Docs</a>
+            <a href="https://mcpch.ai/testing.html" class="nav-link">Testing</a>
+        </div>
+        
+        <a href="https://mcpch.ai/#install" class="btn-primary">Get Started</a>
+    </nav>
+    
+    <div class="container">
+        <div class="report-meta">
+            <h1 style="font-size: 1.5rem; font-weight: 600; color: white; margin: 0;">Unit Test Report</h1>
+            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                <div style="color: var(--color-text-dim); font-size: 0.75rem; text-transform: uppercase;">Generated</div>
+                <div style="color: white; margin-top: 2px;">2026-02-01 19:21:21</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <!-- Col 1: Pass Rate -->
+            <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <h3>Pass Rate</h3>
+                <div style="position: relative; width: 160px; height: 160px;">
+                    <canvas id="passChart"></canvas>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                         <div style="font-size: 2rem; font-weight: bold; color: #4ADE80">100%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Col 2: Distribution -->
+            <div class="card">
+                <h3>Results Distribution</h3>
+                <div class="chart-container">
+                     <canvas id="barChart"></canvas>
+                </div>
+                <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: white;">36</div>
+                        <div class="metric-label">Total</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #4ADE80;">36</div>
+                        <div class="metric-label">Passed</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #F87171;">0</div>
+                        <div class="metric-label">Failed</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Col 3: Code Coverage -->
+            <div class="card">
+                <h3>Code Coverage</h3>
+                <div class="chart-container">
+                    <canvas id="coverageChart"></canvas>
+                </div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <div class="metric">100.0%</div>
+                    <div class="metric-label">Lines Covered</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div style="padding: 2rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;">Detailed Results</h3>
+                <div style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">
+                    Total Duration: 1.17s
+                </div> 
+            </div>
+            <table class="test-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60%;">Test Case</th>
+                        <th style="width: 20%;">Outcome</th>
+                        <th style="width: 20%;">Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_get_connection_error
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_chia_client.py::TestChiaRpcClient::test_get_connection_error</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0012s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test handling of ConnectionError.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0012s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 21.488861267477287%; background: #60A5FA;" title="Setup: 0.0003s"></div>
+                                            <div class="segment" style="width: 72.52592818452179%; background: #4ADE80;" title="Call: 0.0009s"></div>
+                                            <div class="segment" style="width: 5.9852105480009365%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_get_connection_error(self, mock_post):
+        """Test handling of ConnectionError."""
+        mock_post.side_effect = requests.exceptions.ConnectionError("Connection refused")
+        
+        res = self.client.get("test_endpoint")
+        self.assertFalse(res["success"])
+        self.assertIn("Connection refused", res["error"])
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_get_generic_exception
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_chia_client.py::TestChiaRpcClient::test_get_generic_exception</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0005s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test handling of generic exceptions.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0005s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 14.479559608320711%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 75.06465655136174%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 10.45578384031756%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_get_generic_exception(self, mock_post):
+        """Test handling of generic exceptions."""
+        mock_post.side_effect = Exception("Boom")
+        
+        res = self.client.get("test_endpoint")
+        self.assertFalse(res["success"])
+        self.assertEqual(res["error"], "Boom")
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_get_success
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_chia_client.py::TestChiaRpcClient::test_get_success</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0007s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test successful RPC call.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0007s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 10.164746450231766%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 82.84040821522927%; background: #4ADE80;" title="Call: 0.0006s"></div>
+                                            <div class="segment" style="width: 6.994845334538952%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_get_success(self, mock_post):
+        """Test successful RPC call."""
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"success": True, "foo": "bar"}
+        mock_post.return_value = mock_response
+
+        # We need to re-init client locally to mock session properly or just patch the existing one
+        # Here we rely on self.client created in setUp, which already has a session.
+        # But requests.Session() is instantiated in __init__.
+        # So we patch the method on the class or instance.
+        
+        res = self.client.get("test_endpoint", {"data": 1})
+        self.assertEqual(res["success"], True)
+        self.assertEqual(res["foo"], "bar")
+        mock_post.assert_called_once()
+        args, kwargs = mock_post.call_args
+        self.assertTrue("https://localhost:8555/test_endpoint" in args[0])
+        self.assertEqual(kwargs["json"], {"data": 1})
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_init_defaults
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_chia_client.py::TestChiaRpcClient::test_init_defaults</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0005s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test initialization with default ports from config.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0005s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 12.659706686406372%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 78.29530960243231%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 9.044983711161308%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_init_defaults(self):
+        """Test initialization with default ports from config."""
+        self.assertEqual(self.client.port, 8555)
+        
+        # Test wallet default
+        with patch("chaimcp.chia_client.load_chia_config", return_value=self.mock_config), \
+             patch("chaimcp.chia_client.get_ssl_paths", return_value={"cert":"c", "key":"k"}):
+            wallet_client = ChiaRpcClient("wallet")
+            self.assertEqual(wallet_client.port, 9256)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_init_explicit_port
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_chia_client.py::TestChiaRpcClient::test_init_explicit_port</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0005s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test initialization with explicit port override.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0005s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 12.711848199774812%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 77.23269256798022%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 10.055459232244969%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_init_explicit_port(self):
+        """Test initialization with explicit port override."""
+        with patch("chaimcp.chia_client.load_chia_config"), \
+             patch("chaimcp.chia_client.get_ssl_paths", return_value={"cert":"c", "key":"k"}):
+            client = ChiaRpcClient("full_node", port=1234)
+            self.assertEqual(client.port, 1234)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_init_unknown_service
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_chia_client.py::TestChiaRpcClient::test_init_unknown_service</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0005s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test error when unknown service used without explicit port.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0005s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 11.914107860993289%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 80.40627733937761%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 7.6796147996291015%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_init_unknown_service(self):
+        """Test error when unknown service used without explicit port."""
+        with patch("chaimcp.chia_client.load_chia_config", return_value=self.mock_config), \
+             patch("chaimcp.chia_client.get_ssl_paths", return_value={"cert":"c", "key":"k"}):
+            with self.assertRaises(ValueError):
+                ChiaRpcClient("unknown_service")
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_wrappers
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_chia_client.py::TestChiaRpcClient::test_wrappers</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0005s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test convenience wrapper methods.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0005s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 11.366221539708688%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 76.08547165883658%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 12.54830680145474%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_wrappers(self, mock_get):
+        """Test convenience wrapper methods."""
+        self.client.get_blockchain_state()
+        mock_get.assert_called_with("get_blockchain_state")
+        
+        self.client.get_network_info()
+        mock_get.assert_called_with("get_network_info")
+        
+        self.client.get_wallets()
+        mock_get.assert_called_with("get_wallets")
+        
+        self.client.get_wallet_balance(123)
+        mock_get.assert_called_with("get_wallet_balance", {"wallet_id": 123})
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_get_chia_root_default
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_config.py::TestConfig::test_get_chia_root_default</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0004s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test getting default CHIA_ROOT when env var is not set.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0004s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 28.880519193898742%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 57.89352657077846%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 13.225954235322796%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_get_chia_root_default(self):
+        """Test getting default CHIA_ROOT when env var is not set."""
+        # Note: This relies on the DEFAULT_CHIA_ROOT import in config.py
+        # which expands ~/.chia/mainnet. We check if it ends with .chia/mainnet
+        root = get_chia_root()
+        self.assertTrue(str(root).endswith(".chia/mainnet"))
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_get_chia_root_env_var
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_config.py::TestConfig::test_get_chia_root_env_var</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0003s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test getting CHIA_ROOT from environment variable.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0003s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 21.34295702353195%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 64.29183695093637%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 14.365206025531682%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_get_chia_root_env_var(self):
+        """Test getting CHIA_ROOT from environment variable."""
+        root = get_chia_root()
+        self.assertEqual(str(root), "/custom/chia/root")
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_get_ssl_paths
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_config.py::TestConfig::test_get_ssl_paths</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0003s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test SSL path generation.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0003s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 18.123099846855443%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 70.14954948324326%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 11.727350669901291%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_get_ssl_paths(self, mock_exists):
+        """Test SSL path generation."""
+        mock_exists.return_value = True
+        root = Path("/test/root")
+        paths = get_ssl_paths("full_node", root)
+        
+        base = "/test/root/config/ssl/full_node"
+        self.assertEqual(paths["cert"], f"{base}/private_full_node.crt")
+        self.assertEqual(paths["key"], f"{base}/private_full_node.key")
+        self.assertTrue(paths["ca"].endswith("private_ca.crt"))
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_get_ssl_paths_fallback
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_config.py::TestConfig::test_get_ssl_paths_fallback</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0003s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test SSL path generation fallback when files don't exist.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0003s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 20.475157573045713%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 64.21875661593573%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 15.306085811018551%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_get_ssl_paths_fallback(self, mock_exists):
+        """Test SSL path generation fallback when files don't exist."""
+        mock_exists.return_value = False
+        root = Path("/test/root")
+        # Should execute the 'pass' block and still return paths
+        paths = get_ssl_paths("full_node", root)
+        self.assertIn("private_full_node.crt", paths["cert"])
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_get_ssl_paths_implicit_root
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_config.py::TestConfig::test_get_ssl_paths_implicit_root</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0003s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test SSL path generation with implicit root.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0003s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 17.751606279813316%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 70.70852875107568%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 11.539864969111015%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_get_ssl_paths_implicit_root(self, mock_exists, mock_get_root):
+        """Test SSL path generation with implicit root."""
+        mock_exists.return_value = True
+        mock_get_root.return_value = Path("/implicit/root")
+        
+        paths = get_ssl_paths("wallet")
+        base = "/implicit/root/config/ssl/wallet"
+        self.assertEqual(paths["cert"], f"{base}/private_wallet.crt")
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_load_chia_config_implicit_root
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_config.py::TestConfig::test_load_chia_config_implicit_root</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0014s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test laoding config using implicit get_chia_root().</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0014s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 4.573598902071527%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 92.40614814953652%; background: #4ADE80;" title="Call: 0.0013s"></div>
+                                            <div class="segment" style="width: 3.0202529483919474%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_load_chia_config_implicit_root(self, mock_get_root, mock_file, mock_exists):
+        """Test laoding config using implicit get_chia_root()."""
+        mock_get_root.return_value = Path("/implicit/root")
+        mock_exists.return_value = True
+        config = load_chia_config()
+        self.assertEqual(config["wallet"]["rpc_port"], 9256)
+        mock_get_root.assert_called_once()
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_load_chia_config_not_found
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_config.py::TestConfig::test_load_chia_config_not_found</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0003s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test FileNotFoundError when config file is missing.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0003s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 22.324081912531994%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 64.28153387025449%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 13.394384217213515%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_load_chia_config_not_found(self, mock_exists):
+        """Test FileNotFoundError when config file is missing."""
+        mock_exists.return_value = False
+        with self.assertRaises(FileNotFoundError):
+            load_chia_config(Path("/dummy/root"))
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_load_chia_config_success
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_config.py::TestConfig::test_load_chia_config_success</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0012s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test successfully loading valid YAML config.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0012s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 5.23990384099551%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 88.77459234231274%; background: #4ADE80;" title="Call: 0.0011s"></div>
+                                            <div class="segment" style="width: 5.985503816691744%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_load_chia_config_success(self, mock_file, mock_exists):
+        """Test successfully loading valid YAML config."""
+        mock_exists.return_value = True
+        config = load_chia_config(Path("/dummy/root"))
+        self.assertEqual(config["full_node"]["rpc_port"], 8555)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_deployment_manifest
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_deployment.py::TestKubernetesManifests::test_deployment_manifest</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0015s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0015s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 7.410191689321468%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 90.04610120078802%; background: #4ADE80;" title="Call: 0.0014s"></div>
+                                            <div class="segment" style="width: 2.5437071098905086%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_deployment_manifest(self):
+        docs = self.load_yaml("deployment.yaml")
+        self.assertIsNotNone(docs, "deployment.yaml not found")
+        deployment = docs[0]
+        self.assertEqual(deployment['kind'], 'Deployment')
+        self.assertEqual(deployment['metadata']['name'], 'chaimcp')
+        
+        # Check container spec
+        containers = deployment['spec']['template']['spec']['containers']
+        self.assertTrue(len(containers) &gt; 0)
+        chaimcp = containers[0]
+        self.assertEqual(chaimcp['image'], 'chaimcp:latest')
+        self.assertEqual(chaimcp['ports'][0]['containerPort'], 4443)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_ingress_manifest
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_deployment.py::TestKubernetesManifests::test_ingress_manifest</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0009s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0009s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 6.266704068947643%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 89.80014414205237%; background: #4ADE80;" title="Call: 0.0008s"></div>
+                                            <div class="segment" style="width: 3.933151788999988%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_ingress_manifest(self):
+        docs = self.load_yaml("ingress.yaml")
+        self.assertIsNotNone(docs, "ingress.yaml not found")
+        ingress = docs[0]
+        self.assertEqual(ingress['kind'], 'Ingress')
+        self.assertIn("cert-manager.io/cluster-issuer", ingress['metadata']['annotations'])
+        self.assertEqual(ingress['spec']['tls'][0]['secretName'], 'chaimcp-tls')
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_issuer_manifest
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_deployment.py::TestKubernetesManifests::test_issuer_manifest</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0006s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0006s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 10.710935708693272%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 83.97882288560982%; background: #4ADE80;" title="Call: 0.0005s"></div>
+                                            <div class="segment" style="width: 5.310241405696918%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_issuer_manifest(self):
+        docs = self.load_yaml("issuer.yaml")
+        self.assertIsNotNone(docs, "issuer.yaml not found")
+        issuer = docs[0]
+        self.assertEqual(issuer['kind'], 'ClusterIssuer')
+        self.assertEqual(issuer['spec']['acme']['privateKeySecretRef']['name'], 'letsencrypt-staging')
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_secret_manifest
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_deployment.py::TestKubernetesManifests::test_secret_manifest</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0004s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0004s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 13.88918207032451%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 77.19536391614227%; background: #4ADE80;" title="Call: 0.0003s"></div>
+                                            <div class="segment" style="width: 8.915454013533221%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_secret_manifest(self):
+        docs = self.load_yaml("secret.yaml")
+        self.assertIsNotNone(docs, "secret.yaml not found")
+        secret = docs[0]
+        self.assertEqual(secret['kind'], 'Secret')
+        self.assertEqual(secret['metadata']['name'], 'chaimcp-secrets')
+        self.assertIn('auth-token', secret['stringData'])
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_service_manifest
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_deployment.py::TestKubernetesManifests::test_service_manifest</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0005s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0005s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 10.764722246825409%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 80.43797632669384%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 8.797301426480757%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_service_manifest(self):
+        docs = self.load_yaml("service.yaml")
+        self.assertIsNotNone(docs, "service.yaml not found")
+        service = docs[0]
+        self.assertEqual(service['kind'], 'Service')
+        self.assertEqual(service['metadata']['name'], 'chaimcp')
+        self.assertEqual(service['spec']['ports'][0]['port'], 443)
+        self.assertEqual(service['spec']['ports'][0]['targetPort'], 4443)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_auth_token_env
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_auth_token_env</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0031s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test global auth settings initialization with env var.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0031s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 2.7925694123380302%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 95.64814661167907%; background: #4ADE80;" title="Call: 0.0030s"></div>
+                                            <div class="segment" style="width: 1.559283975982908%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_auth_token_env(self):
+        """Test global auth settings initialization with env var."""
+        with patch.dict(os.environ, {"MCP_AUTH_TOKEN": "test-token"}):
+            reload(main_module)
+            self.assertIsNotNone(main_module.auth_settings)
+            self.assertIsNotNone(main_module.token_verifier)
+            self.assertEqual(main_module.token_verifier.token, "test-token")
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_env_token_verifier
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_env_token_verifier</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0012s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test validation of tokens.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0012s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 5.738474701116155%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 86.9807416835228%; background: #4ADE80;" title="Call: 0.0010s"></div>
+                                            <div class="segment" style="width: 7.280783615361057%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_env_token_verifier(self):
+        """Test validation of tokens."""
+        verifier = EnvTokenVerifier("secret_token")
+        
+        # Helper to run async method
+        import asyncio
+        loop = asyncio.new_event_loop()
+        
+        valid = loop.run_until_complete(verifier.verify_token("secret_token"))
+        self.assertIsNotNone(valid)
+        self.assertEqual(valid.token, "secret_token")
+        
+        invalid = loop.run_until_complete(verifier.verify_token("wrong"))
+        self.assertIsNone(invalid)
+        loop.close()
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_main_execution
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_main_execution</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.3831s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test executing the module as a script (covers __name__ == '__main__').</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.3831s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 0.027487371263182396%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 99.93295118584378%; background: #4ADE80;" title="Call: 0.3828s"></div>
+                                            <div class="segment" style="width: 0.03956144289304265%; background: #F472B6;" title="Teardown: 0.0002s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_main_execution(self):
+        """Test executing the module as a script (covers __name__ == '__main__')."""
+        env = os.environ.copy()
+        env["MCP_TRANSPORT"] = "stdio"
+        env["PYTHONUNBUFFERED"] = "1" # Ensure output is flushed immediately
+        
+        try:
+            process = subprocess.Popen(
+                [sys.executable, "-m", "chaimcp.main"],
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            try:
+                # Wait a bit for startup
+                output, error = process.communicate(timeout=2) 
+            except subprocess.TimeoutExpired:
+                process.kill()
+                output, error = process.communicate()
+            
+            # Combine output for checking
+            full_output = output + error
+            
+            if "ChaiMCP module loaded" not in full_output:
+                # Debugging aid
+                print(f"STDOUT: {output}")
+                print(f"STDERR: {error}")
+            
+            self.assertIn("ChaiMCP module loaded", full_output)
+            
+        except Exception as e:
+            self.fail(f"Subprocess execution failed: {e}")
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_main_http_ssl
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_main_http_ssl</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0011s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test main execution with HTTP transport and SSL enabled.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0011s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 16.16465986830441%; background: #60A5FA;" title="Setup: 0.0002s"></div>
+                                            <div class="segment" style="width: 79.42959464902%; background: #4ADE80;" title="Call: 0.0009s"></div>
+                                            <div class="segment" style="width: 4.405745482675581%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_main_http_ssl(self, mock_exists, mock_mcp, mock_uvicorn):
+        """Test main execution with HTTP transport and SSL enabled."""
+        mock_exists.return_value = True # SSL files exist
+        
+        main_module.main()
+        
+        mock_mcp.streamable_http_app.assert_called_once()
+        mock_uvicorn.assert_called_once()
+        args, kwargs = mock_uvicorn.call_args
+        self.assertEqual(kwargs["ssl_keyfile"], "k")
+        self.assertEqual(kwargs["ssl_certfile"], "c")
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_main_sse_no_ssl
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_main_sse_no_ssl</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0006s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test main execution with SSE transport and no SSL.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0006s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 10.665979994879313%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 81.07022865916149%; background: #4ADE80;" title="Call: 0.0005s"></div>
+                                            <div class="segment" style="width: 8.263791345959211%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_main_sse_no_ssl(self, mock_exists, mock_mcp, mock_uvicorn):
+        """Test main execution with SSE transport and no SSL."""
+        mock_exists.return_value = False # No SSL files
+        
+        main_module.main()
+        
+        mock_mcp.sse_app.assert_called_once()
+        mock_uvicorn.assert_called_once()
+        args, kwargs = mock_uvicorn.call_args
+        self.assertEqual(kwargs["port"], 8080)
+        self.assertNotIn("ssl_keyfile", kwargs)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_main_stdio
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_main_stdio</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0004s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test main execution with stdio transport.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0004s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 15.151866897041682%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 73.73807537154995%; background: #4ADE80;" title="Call: 0.0003s"></div>
+                                            <div class="segment" style="width: 11.110057731408354%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_main_stdio(self, mock_mcp):
+        """Test main execution with stdio transport."""
+        main_module.main()
+        mock_mcp.run.assert_called_with(transport="stdio")
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_tool_get_blockchain_state_failure
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_tool_get_blockchain_state_failure</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0003s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test get_blockchain_state tool failure path.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0003s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 16.57384460312877%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 68.55172603157114%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 14.874429365300095%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_tool_get_blockchain_state_failure(self, MockClient):
+        """Test get_blockchain_state tool failure path."""
+        mock_instance = MockClient.return_value
+        mock_instance.get_blockchain_state.return_value = {
+            "success": False,
+            "error": "RPC Error"
+        }
+        
+        result = get_blockchain_state()
+        self.assertIn("Error: RPC Error", result)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_tool_get_blockchain_state_success
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_tool_get_blockchain_state_success</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0005s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test get_blockchain_state tool success path.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0005s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 11.884615531051661%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 77.88402969952385%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 10.231354769424488%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_tool_get_blockchain_state_success(self, MockClient):
+        """Test get_blockchain_state tool success path."""
+        mock_instance = MockClient.return_value
+        mock_instance.get_blockchain_state.return_value = {
+            "success": True,
+            "blockchain_state": {
+                "sync": {"sync_mode": True, "synced": True},
+                "peak": {"height": 100},
+                "space": 1000,
+                "difficulty": 5
+            }
+        }
+        
+        result = get_blockchain_state()
+        data = json.loads(result)
+        self.assertEqual(data["peak_height"], 100)
+        self.assertTrue(data["synced"])
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_tool_get_network_info
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_tool_get_network_info</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0003s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test get_network_info tool.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0003s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 19.169073582947263%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 68.48707523891113%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 12.343851178141604%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_tool_get_network_info(self, MockClient):
+        """Test get_network_info tool."""
+        mock_instance = MockClient.return_value
+        mock_instance.get_network_info.return_value = {"success": True, "network_name": "mainnet"}
+        
+        result = get_network_info()
+        data = json.loads(result)
+        self.assertEqual(data["network_name"], "mainnet")
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_tool_get_wallet_balance_failure
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_tool_get_wallet_balance_failure</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0003s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test get_wallet_balance tool failure.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0003s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 18.693766884380523%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 67.95887481505017%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 13.347358300569311%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_tool_get_wallet_balance_failure(self, MockClient):
+        """Test get_wallet_balance tool failure."""
+        mock_instance = MockClient.return_value
+        mock_instance.get_wallet_balance.return_value = {
+            "success": False,
+            "error": "Wallet locked"
+        }
+        
+        result = get_wallet_balance(1)
+        self.assertIn("Error: Wallet locked", result)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_tool_get_wallet_balance_success
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_main.py::TestMain::test_tool_get_wallet_balance_success</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0003s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test get_wallet_balance tool success.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0003s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 15.32482818854354%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 58.787051728442805%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 25.888120083013654%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_tool_get_wallet_balance_success(self, MockClient):
+        """Test get_wallet_balance tool success."""
+        mock_instance = MockClient.return_value
+        mock_instance.get_wallet_balance.return_value = {
+            "success": True,
+            "wallet_balance": {
+                "confirmed_wallet_balance": 1500000000000, # 1.5 XCH
+                "spendable_balance": 1500000000000
+            }
+        }
+        
+        result = get_wallet_balance(1)
+        data = json.loads(result)
+        self.assertEqual(data["confirmed_balance_xch"], 1.5)
+        self.assertEqual(data["confirmed_balance_mojos"], 1500000000000)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_npx_launch_help
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_npx_launch.py::TestNpxLaunch::test_npx_launch_help</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.3848s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test that the Node.js wrapper launches successfully with --help.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.3848s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 0.03918001270369268%; background: #60A5FA;" title="Setup: 0.0002s"></div>
+                                            <div class="segment" style="width: 99.91506657344111%; background: #4ADE80;" title="Call: 0.3844s"></div>
+                                            <div class="segment" style="width: 0.04575341385518862%; background: #F472B6;" title="Teardown: 0.0002s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_npx_launch_help(self):
+        """Test that the Node.js wrapper launches successfully with --help."""
+        
+        # Ensure we use the current python environment for the subprocess if possible, 
+        # or rely on the wrapper's default behavior.
+        # The wrapper spawns 'python3', so we need to make sure 'python3' is available 
+        # and has dependencies. Since we are running tests, we assume dependencies are there.
+        
+        # We also need 'node' available.
+        
+        try:
+            # Activate the virtual environment if we are in one so the wrapper finds deps
+            env = os.environ.copy()
+            
+            # Ensure the python executable used by node matches ours by prepending its dir to PATH
+            python_dir = os.path.dirname(sys.executable)
+            env["PATH"] = python_dir + os.pathsep + env.get("PATH", "")
+            
+            # Propagate current sys.path to PYTHONPATH to ensure all libs are found
+            # Filter out empty strings which might be current dir
+            valid_paths = [p for p in sys.path if p and os.path.isdir(p)]
+            env["PYTHONPATH"] = os.pathsep.join(valid_paths) + os.pathsep + env.get("PYTHONPATH", "")
+
+            # Run: node bin/server.js --help
+            result = subprocess.run(
+                ["node", self.bin_script, "--help"],
+                capture_output=True,
+                text=True,
+                env=env,
+                check=False # Check manually
+            )
+            
+            # Check exit code
+            self.assertEqual(result.returncode, 0, f"Script failed with stderr: {result.stderr}")
+            
+            # Check for expected output identifying it's our server
+            # The FastMCP server usually prints usage info or "options" on --help
+            # The FastMCP server might not print usage info on --help if not configured to do so,
+            # or it might just start the server.
+            # We check for the startup logs we saw in manual verification.
+            output = result.stdout.lower() + result.stderr.lower()
+            self.assertIn("starting chaimcp server", output)
+            self.assertIn("pythonpath", output)
+
+        except FileNotFoundError:
+            self.skipTest("node executable not found")
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_invalid_token
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_server.py::TestAuth::test_invalid_token</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0051s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0051s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 4.291865904485022%; background: #60A5FA;" title="Setup: 0.0002s"></div>
+                                            <div class="segment" style="width: 94.69656958110191%; background: #4ADE80;" title="Call: 0.0049s"></div>
+                                            <div class="segment" style="width: 1.011564514413074%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python"></code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_valid_token
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_server.py::TestAuth::test_valid_token</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0011s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0011s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 6.481717036616554%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 88.29364457831007%; background: #4ADE80;" title="Call: 0.0010s"></div>
+                                            <div class="segment" style="width: 5.22463838507337%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python"></code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_get_blockchain_state
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_server.py::TestChaiMCP::test_get_blockchain_state</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0005s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test get_blockchain_state tool.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0005s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 19.298924290631067%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 72.30444501821177%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 8.396630691157164%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_get_blockchain_state(self, MockClient):
+        """Test get_blockchain_state tool."""
+        # Setup mock
+        mock_instance = MockClient.return_value
+        mock_instance.get_blockchain_state.return_value = {
+            "success": True,
+            "blockchain_state": {
+                "sync": {"sync_mode": False, "synced": True},
+                "peak": {"height": 12345},
+                "difficulty": 100
+            }
+        }
+        
+        # Run tool
+        result = get_blockchain_state()
+        data = json.loads(result)
+        
+        # Verify
+        self.assertTrue(data["synced"])
+        self.assertEqual(data["peak_height"], 12345)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding: 0;">
+                            <details style="width: 100%;">
+                                <summary style="padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.95rem; color: #E5E7EB; display: flex; align-items: center; gap: 8px;">
+                                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-text-dim);"></i>
+                                            test_get_wallet_balance
+                                        </div>
+                                        <div style="color: #6B7280; font-size: 0.75em; margin-top: 4px; padding-left: 24px;">tests/test_server.py::TestChaiMCP::test_get_wallet_balance</div>
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%;" class="status-passed">
+                                        <i data-lucide="check-circle" style="width: 16px;"></i>
+                                        PASSED
+                                    </div>
+                                    
+                                    <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
+                                        0.0003s
+                                    </div>
+                                </summary>
+                                
+                                <div style="padding: 0 1.5rem 1.5rem 3rem;">
+                                    <div class="test-details">
+                                        <div style="margin-bottom: 1rem; color: #D6D3D1; font-style: italic;">Test get_wallet_balance tool.</div>
+                                        
+                                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
+                                            <span>Execution Timeline</span>
+                                            <span>Total: 0.0003s</span>
+                                        </div>
+                                        <div class="timeline-bar">
+                                            <div class="segment" style="width: 17.796315975517913%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 65.78018566601264%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 16.423498358469452%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #4ADE80; border-radius: 50%;"></div> Call</div>
+                                            <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #F472B6; border-radius: 50%;"></div> Teardown</div>
+                                        </div>
+
+                                        <div class="code-block">
+                                            <pre><code class="language-python">    def test_get_wallet_balance(self, MockClient):
+        """Test get_wallet_balance tool."""
+        # Setup mock
+        mock_instance = MockClient.return_value
+        mock_instance.get_wallet_balance.return_value = {
+            "success": True,
+            "wallet_balance": {
+                "confirmed_wallet_balance": 1500000000000, # 1.5 XCH
+                "spendable_balance": 1500000000000
+            }
+        }
+        
+        # Run tool
+        result = get_wallet_balance(1)
+        data = json.loads(result)
+        
+        # Verify
+        self.assertEqual(data["confirmed_balance_xch"], 1.5)
+</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        // Pass Rate Donut
+        new Chart(document.getElementById('passChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Passed', 'Failed/Skipped'],
+                datasets: [{
+                    data: [36, 0],
+                    backgroundColor: ['#4ADE80', 'rgba(255,255,255,0.05)'],
+                    borderWidth: 0,
+                    cutout: '85%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }
+            }
+        });
+    
+        // Distribution Bar
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Passed', 'Failed', 'Skipped'],
+                datasets: [{
+                    data: [36, 0, 0],
+                    backgroundColor: ['#4ADE80', '#F87171', '#9CA3AF'],
+                    borderRadius: 4,
+                    barThickness: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { display: false },
+                    x: { grid: { display: false }, ticks: { color: '#A8A29E' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Coverage Bar
+        new Chart(document.getElementById('coverageChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Coverage'],
+                datasets: [{
+                    label: 'Percentage',
+                    data: [100.0],
+                    backgroundColor: ['#FBBF24'],
+                    borderRadius: 4,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        max: 100,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#A8A29E', font: { family: 'JetBrains Mono' } },
+                        border: { display: false }
+                    },
+                    x: { display: false }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    </script>
+</body>
+</html>

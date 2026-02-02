@@ -38,4 +38,4 @@ kubectl apply -f k8s/ingress.yaml
 echo -e "${GREEN}🔄 Restarting deployment...${NC}"
 kubectl rollout restart deployment chaimcp
 
-echo -e "${GREEN}🎉 Deployment complete! View reports at test_report.html${NC}"
+echo -e "${GREEN}🎉 Deployment complete! View reports at testing.html${NC}"

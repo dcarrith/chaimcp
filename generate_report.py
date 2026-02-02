@@ -328,6 +328,7 @@ def generate_html_report(test_results, coverage_results):
             <a href="https://mcpch.ai/#features" class="nav-link">Features</a>
             <a href="https://mcpch.ai/#install" class="nav-link">Install</a>
             <a href="https://mcpch.ai/docs.html" class="nav-link">Docs</a>
+            <a href="https://mcpch.ai/testing.html" class="nav-link">Testing</a>
         </div>
         
         <a href="https://mcpch.ai/#install" class="btn-primary">Get Started</a>
@@ -565,9 +566,10 @@ def generate_html_report(test_results, coverage_results):
 </html>
 """
 
-    with open('test_report.html', 'w') as f:
+    with open("testing.html", "w") as f:
         f.write(html_content)
-    print("Report generated: test_report.html")
+    
+    print(f"Report generated: testing.html")
 
 def main():
     # 1. Run pytest with --json-report
