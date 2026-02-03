@@ -162,14 +162,58 @@
             <span class="font-mono font-bold text-xl tracking-tight text-white">mcp<span class="text-secondary">ch.ai</span></span>
         </a>
         <div class="hidden md:flex items-center gap-8">
-            <a href="https://mcpch.ai/#features" class="nav-link">Features</a>
-            <a href="https://mcpch.ai/#install" class="nav-link">Install</a>
-            <a href="https://mcpch.ai/docs.html" class="nav-link">Docs</a>
-            <a href="https://mcpch.ai/testing.html" class="nav-link">Testing</a>
-            <a href="https://mcpch.ai/security.html" class="nav-link" style="color: var(--color-primary);">Security</a>
+            <a href="https://mcpch.ai/#features" class="nav-link font-medium hover:text-primary transition-colors text-white/80">Features</a>
+            <a href="https://mcpch.ai/#install" class="nav-link font-medium hover:text-primary transition-colors text-white/80">Install</a>
+            <a href="https://mcpch.ai/docs.html" class="nav-link font-medium hover:text-primary transition-colors text-white/80">Docs</a>
+            <a href="https://mcpch.ai/testing.html" class="nav-link font-medium hover:text-primary transition-colors text-white/80">Testing</a>
+            <a href="https://mcpch.ai/security.html" class="nav-link font-medium hover:text-primary transition-colors text-white/80" style="color: var(--color-primary);">Security</a>
         </div>
-        <a href="https://mcpch.ai/#install" class="btn-primary">Get Started</a>
+        
+        <div class="flex items-center gap-4">
+            <a href="https://mcpch.ai/#install" class="hidden md:inline-flex btn-primary bg-[#F59E0B] text-black font-semibold py-2 px-4 rounded-lg text-sm transition-transform hover:-translate-y-px">Get Started</a>
+            
+            <button id="mobile-menu-btn" class="md:hidden text-white hover:text-primary transition-colors p-1">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu"
+            class="hidden absolute top-full left-0 right-0 mt-2 bg-[#1C1917]/95 backdrop-blur-xl border border-white/10 rounded-xl p-6 flex flex-col gap-4 md:hidden shadow-2xl">
+            <a href="https://mcpch.ai/#features"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Features</a>
+            <a href="https://mcpch.ai/#install"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Install</a>
+            <a href="https://mcpch.ai/docs.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Docs</a>
+            <a href="https://mcpch.ai/testing.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Testing</a>
+            <a href="https://mcpch.ai/security.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Security</a>
+            <a href="https://mcpch.ai/#install" class="btn-primary bg-[#F59E0B] text-black font-semibold py-3 px-4 rounded-lg text-center justify-center mt-2">Get Started</a>
+        </div>
     </nav>
+    
+    <script>
+        // Mobile Menu Toggle logic
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let isMenuOpen = false;
+
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {
+                    mobileMenu.classList.remove('hidden');
+                    menuBtn.innerHTML = '<i data-lucide="x" class="w-6 h-6"></i>';
+                } else {
+                    mobileMenu.classList.add('hidden');
+                    menuBtn.innerHTML = '<i data-lucide="menu" class="w-6 h-6"></i>';
+                }
+                lucide.createIcons();
+            });
+        }
+    </script>
 
     <div class="container">
         <div class="report-header">
@@ -179,7 +223,7 @@
             </div>
             <div style="text-align: right;">
                 <div style="color: var(--color-text-dim); font-size: 0.75rem; text-transform: uppercase;">Generated</div>
-                <div style="color: white; font-family: 'JetBrains Mono';">2026-02-03 01:06:51</div>
+                <div style="color: white; font-family: 'JetBrains Mono';">2026-02-03 09:10:58</div>
             </div>
         </div>
 
@@ -187,7 +231,7 @@
             <!-- Score Card -->
             <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
                 <h3 style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Security Score</h3>
-                <div style="font-size: 4rem; font-weight: 800; color: #4ADE80; line-height: 1;">80</div>
+                <div style="font-size: 4rem; font-weight: 800; color: #4ADE80; line-height: 1;">100</div>
                 <div style="font-size: 0.9rem; color: var(--color-text-dim); margin-top: 0.5rem;">Pipeline Health</div>
             </div>
 
@@ -214,9 +258,9 @@
                         <span style="font-weight: 500;">Safety (Deps)</span>
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">
-                                Failed / Timeout
+                                0 Issues
                             </span>
-                            <i data-lucide="alert-triangle" style="color: #EF4444; width: 16px;"></i>
+                            <i data-lucide="check-circle" style="color: #4ADE80; width: 16px;"></i>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
@@ -241,7 +285,7 @@
         <!-- Safety Findings -->
         <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; border-left: 4px solid var(--color-secondary); padding-left: 1rem;">Dependency Findings</h2>
         <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem;">
-    <div class="card" style="text-align: center; color: var(--sev-high);">Safety scan failed or timed out. Please check connectivity.</div>
+    <div class="card" style="text-align: center; color: var(--color-text-dim);">No dependency vulnerabilities found. 🎉</div>
         </div>
         </div>
     </div>

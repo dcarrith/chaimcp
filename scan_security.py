@@ -305,14 +305,58 @@ def generate_html_report(bandit_results, safety_results, npm_results):
             <span class="font-mono font-bold text-xl tracking-tight text-white">mcp<span class="text-secondary">ch.ai</span></span>
         </a>
         <div class="hidden md:flex items-center gap-8">
-            <a href="https://mcpch.ai/#features" class="nav-link">Features</a>
-            <a href="https://mcpch.ai/#install" class="nav-link">Install</a>
-            <a href="https://mcpch.ai/docs.html" class="nav-link">Docs</a>
-            <a href="https://mcpch.ai/testing.html" class="nav-link">Testing</a>
-            <a href="https://mcpch.ai/security.html" class="nav-link" style="color: var(--color-primary);">Security</a>
+            <a href="https://mcpch.ai/#features" class="nav-link font-medium hover:text-primary transition-colors text-white/80">Features</a>
+            <a href="https://mcpch.ai/#install" class="nav-link font-medium hover:text-primary transition-colors text-white/80">Install</a>
+            <a href="https://mcpch.ai/docs.html" class="nav-link font-medium hover:text-primary transition-colors text-white/80">Docs</a>
+            <a href="https://mcpch.ai/testing.html" class="nav-link font-medium hover:text-primary transition-colors text-white/80">Testing</a>
+            <a href="https://mcpch.ai/security.html" class="nav-link font-medium hover:text-primary transition-colors text-white/80" style="color: var(--color-primary);">Security</a>
         </div>
-        <a href="https://mcpch.ai/#install" class="btn-primary">Get Started</a>
+        
+        <div class="flex items-center gap-4">
+            <a href="https://mcpch.ai/#install" class="hidden md:inline-flex btn-primary bg-[#F59E0B] text-black font-semibold py-2 px-4 rounded-lg text-sm transition-transform hover:-translate-y-px">Get Started</a>
+            
+            <button id="mobile-menu-btn" class="md:hidden text-white hover:text-primary transition-colors p-1">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu"
+            class="hidden absolute top-full left-0 right-0 mt-2 bg-[#1C1917]/95 backdrop-blur-xl border border-white/10 rounded-xl p-6 flex flex-col gap-4 md:hidden shadow-2xl">
+            <a href="https://mcpch.ai/#features"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Features</a>
+            <a href="https://mcpch.ai/#install"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Install</a>
+            <a href="https://mcpch.ai/docs.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Docs</a>
+            <a href="https://mcpch.ai/testing.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Testing</a>
+            <a href="https://mcpch.ai/security.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Security</a>
+            <a href="https://mcpch.ai/#install" class="btn-primary bg-[#F59E0B] text-black font-semibold py-3 px-4 rounded-lg text-center justify-center mt-2">Get Started</a>
+        </div>
     </nav>
+    
+    <script>
+        // Mobile Menu Toggle logic
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let isMenuOpen = false;
+
+        if (menuBtn && mobileMenu) {{
+            menuBtn.addEventListener('click', () => {{
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {{
+                    mobileMenu.classList.remove('hidden');
+                    menuBtn.innerHTML = '<i data-lucide="x" class="w-6 h-6"></i>';
+                }} else {{
+                    mobileMenu.classList.add('hidden');
+                    menuBtn.innerHTML = '<i data-lucide="menu" class="w-6 h-6"></i>';
+                }}
+                lucide.createIcons();
+            }});
+        }}
+    </script>
 
     <div class="container">
         <div class="report-header">

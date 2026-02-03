@@ -161,10 +161,57 @@
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .stats-grid > div:last-child { grid-column: span 2; }
             .nav-links-desktop { display: none; }
+            .mobile-menu-btn { display: block; }
+        }
+        @media (min-width: 1025px) {
+            .mobile-menu-btn { display: none; }
         }
         @media (max-width: 768px) {
             .stats-grid { grid-template-columns: 1fr; }
             .stats-grid > div:last-child { grid-column: span 1; }
+        }
+        
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        .mobile-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 0.5rem;
+            background-color: rgba(28, 25, 23, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .mobile-menu.hidden { display: none; }
+        
+        .mobile-menu a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 1.125rem;
+            font-weight: 500;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: color 0.2s;
+        }
+        .mobile-menu a:hover { color: var(--color-primary); }
+        .mobile-menu .btn-primary {
+            text-align: center;
+            margin-top: 0.5rem;
+            border-bottom: none;
         }
         
         .card { 
@@ -336,18 +383,55 @@
             <a href="https://mcpch.ai/#install" class="nav-link">Install</a>
             <a href="https://mcpch.ai/docs.html" class="nav-link">Docs</a>
             <a href="https://mcpch.ai/testing.html" class="nav-link">Testing</a>
-            <a href="https://mcpch.ai/security.html" class="nav-link">Security</a>
+            <a href="https://mcpch.ai/security.html" class="nav-link" style="color: var(--color-primary);">Security</a>
         </div>
         
-        <a href="https://mcpch.ai/#install" class="btn-primary">Get Started</a>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="https://mcpch.ai/#install" class="btn-primary" style="display: none; @media (min-width: 768px) { display: inline-block; }">Get Started</a>
+            
+            <button id="mobile-menu-btn" class="mobile-menu-btn">
+                <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu hidden">
+            <a href="https://mcpch.ai/#features">Features</a>
+            <a href="https://mcpch.ai/#install">Install</a>
+            <a href="https://mcpch.ai/docs.html">Docs</a>
+            <a href="https://mcpch.ai/testing.html">Testing</a>
+            <a href="https://mcpch.ai/security.html">Security</a>
+            <a href="https://mcpch.ai/#install" class="btn-primary">Get Started</a>
+        </div>
     </nav>
+    
+    <script>
+        // Mobile Menu Logic
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let isMenuOpen = false;
+
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {
+                    mobileMenu.classList.remove('hidden');
+                    menuBtn.innerHTML = '<i data-lucide="x" style="width: 24px; height: 24px;"></i>';
+                } else {
+                    mobileMenu.classList.add('hidden');
+                    menuBtn.innerHTML = '<i data-lucide="menu" style="width: 24px; height: 24px;"></i>';
+                }
+                lucide.createIcons();
+            });
+        }
+    </script>
     
     <div class="container">
         <div class="report-meta">
             <h1 style="font-size: 1.5rem; font-weight: 600; color: white; margin: 0;">Unit Test Report</h1>
             <div style="display: flex; flex-direction: column; align-items: flex-end;">
                 <div style="color: var(--color-text-dim); font-size: 0.75rem; text-transform: uppercase;">Generated</div>
-                <div style="color: white; margin-top: 2px;">2026-02-03 01:08:33</div>
+                <div style="color: white; margin-top: 2px;">2026-02-03 09:10:56</div>
             </div>
         </div>
 
@@ -402,7 +486,7 @@
             <div style="padding: 2rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
                 <h3 style="margin: 0;">Detailed Results</h3>
                 <div style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">
-                    Total Duration: 112.76s
+                    Total Duration: 112.68s
                 </div> 
             </div>
             <table class="test-table">
@@ -433,7 +517,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0011s
+                                        0.0010s
                                     </div>
                                 </summary>
                                 
@@ -443,12 +527,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0011s</span>
+                                            <span>Total: 0.0010s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 20.45051878562875%; background: #60A5FA;" title="Setup: 0.0002s"></div>
-                                            <div class="segment" style="width: 73.38841409532665%; background: #4ADE80;" title="Call: 0.0008s"></div>
-                                            <div class="segment" style="width: 6.161067119044602%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 21.1579748707796%; background: #60A5FA;" title="Setup: 0.0002s"></div>
+                                            <div class="segment" style="width: 72.18920721895435%; background: #4ADE80;" title="Call: 0.0007s"></div>
+                                            <div class="segment" style="width: 6.652817910266045%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -502,9 +586,9 @@
                                             <span>Total: 0.0005s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 14.460019180270761%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 75.15831909673734%; background: #4ADE80;" title="Call: 0.0004s"></div>
-                                            <div class="segment" style="width: 10.381661722991888%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 14.609730599446605%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 74.3429041334352%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 11.047365267118197%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -558,9 +642,9 @@
                                             <span>Total: 0.0006s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 10.535388123427012%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 81.8372894764396%; background: #4ADE80;" title="Call: 0.0005s"></div>
-                                            <div class="segment" style="width: 7.6273224001334015%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 10.405329868082715%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 80.81035294753568%; background: #4ADE80;" title="Call: 0.0005s"></div>
+                                            <div class="segment" style="width: 8.78431718438161%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -625,9 +709,9 @@
                                             <span>Total: 0.0005s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 12.898733971684514%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 77.4448258968428%; background: #4ADE80;" title="Call: 0.0004s"></div>
-                                            <div class="segment" style="width: 9.656440131472689%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 12.461545341046943%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 76.64315726469934%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 10.895297394253724%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -670,7 +754,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0005s
+                                        0.0004s
                                     </div>
                                 </summary>
                                 
@@ -680,12 +764,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0005s</span>
+                                            <span>Total: 0.0004s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 12.285373922872852%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 78.5342654093953%; background: #4ADE80;" title="Call: 0.0004s"></div>
-                                            <div class="segment" style="width: 9.180360667731843%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 12.284263747572757%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 75.98236254709252%; background: #4ADE80;" title="Call: 0.0003s"></div>
+                                            <div class="segment" style="width: 11.733373705334724%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -738,9 +822,9 @@
                                             <span>Total: 0.0005s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 12.540591364502573%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 78.70134620796885%; background: #4ADE80;" title="Call: 0.0004s"></div>
-                                            <div class="segment" style="width: 8.758062427528582%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 12.37826193484247%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 77.16517053664064%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 10.45656752851688%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -780,7 +864,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0006s
+                                        0.0005s
                                     </div>
                                 </summary>
                                 
@@ -790,12 +874,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0006s</span>
+                                            <span>Total: 0.0005s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 11.44659080941127%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 75.16900420669067%; background: #4ADE80;" title="Call: 0.0004s"></div>
-                                            <div class="segment" style="width: 13.384404983898065%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 11.261774408796661%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 73.44993290857282%; background: #4ADE80;" title="Call: 0.0004s"></div>
+                                            <div class="segment" style="width: 15.28829268263052%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -855,9 +939,9 @@
                                             <span>Total: 0.0004s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 29.581518367792114%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 58.262859272286875%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 12.155622359921017%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 28.756840010821815%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 57.00841609396953%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 14.234743895208652%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -910,9 +994,9 @@
                                             <span>Total: 0.0003s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 22.223786388891938%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 63.73113570131772%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 14.045077909790344%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 20.979645732193475%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 61.5399335994873%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 17.480420668319226%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -963,9 +1047,9 @@
                                             <span>Total: 0.0003s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 16.99805135804979%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 70.87097513045501%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 12.130973511495204%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 17.050037844017655%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 64.2511250091731%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 18.698837146809254%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1022,9 +1106,9 @@
                                             <span>Total: 0.0003s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 21.419477205066194%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 64.808728584751%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 13.771794210182811%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 19.53071252524218%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 63.561110212666826%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 16.908177262090994%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1078,9 +1162,9 @@
                                             <span>Total: 0.0003s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 18.359086625186592%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 69.57322422899028%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 12.06768914582312%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 20.66771134466269%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 65.49790614108556%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 13.83438251425175%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1122,7 +1206,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0014s
+                                        0.0012s
                                     </div>
                                 </summary>
                                 
@@ -1132,12 +1216,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0014s</span>
+                                            <span>Total: 0.0012s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 4.289798018218954%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 92.73470350048476%; background: #4ADE80;" title="Call: 0.0013s"></div>
-                                            <div class="segment" style="width: 2.975498481296289%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 4.355378102149407%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 91.46637535325512%; background: #4ADE80;" title="Call: 0.0011s"></div>
+                                            <div class="segment" style="width: 4.178246544595479%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1191,9 +1275,9 @@
                                             <span>Total: 0.0003s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 21.98730759026249%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 62.21426313708429%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 15.79842927265322%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 22.107956032134226%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 61.568722675011564%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 16.32332129285421%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1232,7 +1316,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0010s
+                                        0.0009s
                                     </div>
                                 </summary>
                                 
@@ -1242,12 +1326,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0010s</span>
+                                            <span>Total: 0.0009s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 5.9405969538921815%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 88.46463605937716%; background: #4ADE80;" title="Call: 0.0009s"></div>
-                                            <div class="segment" style="width: 5.594766986730666%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 5.572713765556025%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 87.12245173661665%; background: #4ADE80;" title="Call: 0.0008s"></div>
+                                            <div class="segment" style="width: 7.304834497827323%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1286,7 +1370,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0019s
+                                        0.0018s
                                     </div>
                                 </summary>
                                 
@@ -1296,12 +1380,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0019s</span>
+                                            <span>Total: 0.0018s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 4.99029460775763%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 92.9078618789682%; background: #4ADE80;" title="Call: 0.0018s"></div>
-                                            <div class="segment" style="width: 2.1018435132741593%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 5.945913083067354%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 90.84995827190811%; background: #4ADE80;" title="Call: 0.0016s"></div>
+                                            <div class="segment" style="width: 3.2041286450245376%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1348,7 +1432,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0013s
+                                        0.0011s
                                     </div>
                                 </summary>
                                 
@@ -1358,12 +1442,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0013s</span>
+                                            <span>Total: 0.0011s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 4.978780005504929%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 91.79383229326506%; background: #4ADE80;" title="Call: 0.0012s"></div>
-                                            <div class="segment" style="width: 3.2273877012300165%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 6.314517755958391%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 89.38063107693512%; background: #4ADE80;" title="Call: 0.0010s"></div>
+                                            <div class="segment" style="width: 4.304851167106495%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1417,9 +1501,9 @@
                                             <span>Total: 0.0012s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 5.024807071342911%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 91.3684077202979%; background: #4ADE80;" title="Call: 0.0011s"></div>
-                                            <div class="segment" style="width: 3.6067852083591956%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 5.078018193231664%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 91.48485989204204%; background: #4ADE80;" title="Call: 0.0011s"></div>
+                                            <div class="segment" style="width: 3.437121914726296%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1459,7 +1543,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0005s
+                                        0.0006s
                                     </div>
                                 </summary>
                                 
@@ -1469,12 +1553,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0005s</span>
+                                            <span>Total: 0.0006s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 10.760091135348016%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 81.89232543307543%; background: #4ADE80;" title="Call: 0.0004s"></div>
-                                            <div class="segment" style="width: 7.347583431576552%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 10.695297710108024%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 82.07446736113648%; background: #4ADE80;" title="Call: 0.0005s"></div>
+                                            <div class="segment" style="width: 7.230234928755494%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1515,7 +1599,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0008s
+                                        0.0007s
                                     </div>
                                 </summary>
                                 
@@ -1525,12 +1609,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0008s</span>
+                                            <span>Total: 0.0007s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 7.496669479403824%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 85.68542356325861%; background: #4ADE80;" title="Call: 0.0007s"></div>
-                                            <div class="segment" style="width: 6.817906957337564%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 7.990213969208797%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 83.5885456033804%; background: #4ADE80;" title="Call: 0.0006s"></div>
+                                            <div class="segment" style="width: 8.421240427410805%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1572,7 +1656,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        33.5621s
+                                        33.5943s
                                     </div>
                                 </summary>
                                 
@@ -1582,12 +1666,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 33.5621s</span>
+                                            <span>Total: 33.5943s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 3.260915812940058%; background: #60A5FA;" title="Setup: 1.0944s"></div>
-                                            <div class="segment" style="width: 96.73857120670448%; background: #4ADE80;" title="Call: 32.4675s"></div>
-                                            <div class="segment" style="width: 0.0005129803554554942%; background: #F472B6;" title="Teardown: 0.0002s"></div>
+                                            <div class="segment" style="width: 3.4102793695967812%; background: #60A5FA;" title="Setup: 1.1457s"></div>
+                                            <div class="segment" style="width: 96.58897136913521%; background: #4ADE80;" title="Call: 32.4484s"></div>
+                                            <div class="segment" style="width: 0.0007492612680067887%; background: #F472B6;" title="Teardown: 0.0003s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1645,7 +1729,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        78.1205s
+                                        78.1376s
                                     </div>
                                 </summary>
                                 
@@ -1655,12 +1739,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 78.1205s</span>
+                                            <span>Total: 78.1376s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 0.0001542488304111711%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 45.879113217112%; background: #4ADE80;" title="Call: 35.8410s"></div>
-                                            <div class="segment" style="width: 54.120732534057595%; background: #F472B6;" title="Teardown: 42.2794s"></div>
+                                            <div class="segment" style="width: 0.00018557007909217438%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 45.88222807488207%; background: #4ADE80;" title="Call: 35.8513s"></div>
+                                            <div class="segment" style="width: 54.11758635503884%; background: #F472B6;" title="Teardown: 42.2862s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1710,7 +1794,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0092s
+                                        0.0091s
                                     </div>
                                 </summary>
                                 
@@ -1720,12 +1804,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0092s</span>
+                                            <span>Total: 0.0091s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 8.45759412932603%; background: #60A5FA;" title="Setup: 0.0008s"></div>
-                                            <div class="segment" style="width: 90.80842405443231%; background: #4ADE80;" title="Call: 0.0083s"></div>
-                                            <div class="segment" style="width: 0.7339818162416681%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 7.208672571664579%; background: #60A5FA;" title="Setup: 0.0007s"></div>
+                                            <div class="segment" style="width: 91.94620778184549%; background: #4ADE80;" title="Call: 0.0084s"></div>
+                                            <div class="segment" style="width: 0.8451196464899304%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1766,7 +1850,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0015s
+                                        0.0014s
                                     </div>
                                 </summary>
                                 
@@ -1776,12 +1860,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0015s</span>
+                                            <span>Total: 0.0014s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 5.927112087643621%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 90.71086936605576%; background: #4ADE80;" title="Call: 0.0014s"></div>
-                                            <div class="segment" style="width: 3.3620185463006167%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 7.575809335930189%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 88.44969564710254%; background: #4ADE80;" title="Call: 0.0012s"></div>
+                                            <div class="segment" style="width: 3.9744950169672673%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1830,7 +1914,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.3512s
+                                        0.3303s
                                     </div>
                                 </summary>
                                 
@@ -1840,12 +1924,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.3512s</span>
+                                            <span>Total: 0.3303s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 0.021402578223465214%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 99.94473730071347%; background: #4ADE80;" title="Call: 0.3510s"></div>
-                                            <div class="segment" style="width: 0.03386012106306347%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 0.026690593889696315%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 99.93442163347191%; background: #4ADE80;" title="Call: 0.3301s"></div>
+                                            <div class="segment" style="width: 0.038887772638391147%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1912,7 +1996,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0012s
+                                        0.0010s
                                     </div>
                                 </summary>
                                 
@@ -1922,12 +2006,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0012s</span>
+                                            <span>Total: 0.0010s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 13.556285879447694%; background: #60A5FA;" title="Setup: 0.0002s"></div>
-                                            <div class="segment" style="width: 82.65289788726635%; background: #4ADE80;" title="Call: 0.0010s"></div>
-                                            <div class="segment" style="width: 3.790816233285958%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 15.213848474260146%; background: #60A5FA;" title="Setup: 0.0002s"></div>
+                                            <div class="segment" style="width: 80.22198852714259%; background: #4ADE80;" title="Call: 0.0008s"></div>
+                                            <div class="segment" style="width: 4.564162998597266%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -1985,9 +2069,9 @@
                                             <span>Total: 0.0006s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 11.308259025240414%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 80.03455583507342%; background: #4ADE80;" title="Call: 0.0005s"></div>
-                                            <div class="segment" style="width: 8.657185139686167%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 11.819027087630625%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 80.34890042724085%; background: #4ADE80;" title="Call: 0.0005s"></div>
+                                            <div class="segment" style="width: 7.832072485128529%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2032,7 +2116,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0020s
+                                        0.0019s
                                     </div>
                                 </summary>
                                 
@@ -2042,12 +2126,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0020s</span>
+                                            <span>Total: 0.0019s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 3.597877425345314%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 94.48384159166777%; background: #4ADE80;" title="Call: 0.0018s"></div>
-                                            <div class="segment" style="width: 1.9182809829869116%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 3.0355914320965884%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 94.39469133558741%; background: #4ADE80;" title="Call: 0.0018s"></div>
+                                            <div class="segment" style="width: 2.5697172323159982%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2098,9 +2182,9 @@
                                             <span>Total: 0.0003s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 20.877224651296995%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 66.68307270058965%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 12.439702648113352%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 19.346788935008835%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 68.35567591895283%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 12.297535146038337%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2157,9 +2241,9 @@
                                             <span>Total: 0.0004s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 14.61165788344339%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 76.31647808180541%; background: #4ADE80;" title="Call: 0.0003s"></div>
-                                            <div class="segment" style="width: 9.07186403475119%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 14.084453814047905%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 75.520083026174%; background: #4ADE80;" title="Call: 0.0003s"></div>
+                                            <div class="segment" style="width: 10.395463159778078%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2223,9 +2307,9 @@
                                             <span>Total: 0.0003s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 19.94085097400343%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 65.97652256214867%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 14.082626463847896%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 19.275614021454228%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 66.04869440684402%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 14.67569157170175%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2280,9 +2364,9 @@
                                             <span>Total: 0.0003s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 17.473655641990437%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 68.8224152698096%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 13.703929088199974%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 18.879544584808393%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 66.73657506308865%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 14.383880352102949%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2339,9 +2423,9 @@
                                             <span>Total: 0.0003s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 16.045285453393358%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 58.80684389831069%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 25.147870648295957%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 16.78742842004978%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 60.703944087620876%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 22.508627492329346%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2390,7 +2474,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.3358s
+                                        0.3246s
                                     </div>
                                 </summary>
                                 
@@ -2400,12 +2484,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.3358s</span>
+                                            <span>Total: 0.3246s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 0.0385252773509456%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 99.90952434173074%; background: #4ADE80;" title="Call: 0.3355s"></div>
-                                            <div class="segment" style="width: 0.051950380918301516%; background: #F472B6;" title="Teardown: 0.0002s"></div>
+                                            <div class="segment" style="width: 0.041255750751987716%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 99.91018481091818%; background: #4ADE80;" title="Call: 0.3243s"></div>
+                                            <div class="segment" style="width: 0.04855943832983278%; background: #F472B6;" title="Teardown: 0.0002s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2485,7 +2569,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0042s
+                                        0.0026s
                                     </div>
                                 </summary>
                                 
@@ -2495,12 +2579,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0042s</span>
+                                            <span>Total: 0.0026s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 5.034986330365769%; background: #60A5FA;" title="Setup: 0.0002s"></div>
-                                            <div class="segment" style="width: 93.60978105439615%; background: #4ADE80;" title="Call: 0.0039s"></div>
-                                            <div class="segment" style="width: 1.3552326152380698%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 8.459109771874992%; background: #60A5FA;" title="Setup: 0.0002s"></div>
+                                            <div class="segment" style="width: 89.24102541595119%; background: #4ADE80;" title="Call: 0.0023s"></div>
+                                            <div class="segment" style="width: 2.299864812173817%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2534,7 +2618,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0011s
+                                        0.0010s
                                     </div>
                                 </summary>
                                 
@@ -2544,12 +2628,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0011s</span>
+                                            <span>Total: 0.0010s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 6.643874336347326%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 88.24330567880668%; background: #4ADE80;" title="Call: 0.0009s"></div>
-                                            <div class="segment" style="width: 5.112819984845995%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 6.12847927382232%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 87.64026296312318%; background: #4ADE80;" title="Call: 0.0009s"></div>
+                                            <div class="segment" style="width: 6.2312577630545105%; background: #F472B6;" title="Teardown: 0.0001s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2583,7 +2667,7 @@
                                     </div>
                                     
                                     <div style="flex: 0 0 15%; color: #9CA3AF; text-align: right; font-family: 'JetBrains Mono';">
-                                        0.0005s
+                                        0.0004s
                                     </div>
                                 </summary>
                                 
@@ -2593,12 +2677,12 @@
                                         
                                         <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-dim); font-weight: 600; display: flex; justify-content: space-between;">
                                             <span>Execution Timeline</span>
-                                            <span>Total: 0.0005s</span>
+                                            <span>Total: 0.0004s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 18.925696751247745%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 72.46692286680954%; background: #4ADE80;" title="Call: 0.0004s"></div>
-                                            <div class="segment" style="width: 8.607380381942718%; background: #F472B6;" title="Teardown: 0.0000s"></div>
+                                            <div class="segment" style="width: 18.49701095443677%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 70.76365596362379%; background: #4ADE80;" title="Call: 0.0003s"></div>
+                                            <div class="segment" style="width: 10.739333081939439%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>
@@ -2665,9 +2749,9 @@
                                             <span>Total: 0.0003s</span>
                                         </div>
                                         <div class="timeline-bar">
-                                            <div class="segment" style="width: 18.13864348379675%; background: #60A5FA;" title="Setup: 0.0001s"></div>
-                                            <div class="segment" style="width: 66.25851976053923%; background: #4ADE80;" title="Call: 0.0002s"></div>
-                                            <div class="segment" style="width: 15.602836755664018%; background: #F472B6;" title="Teardown: 0.0001s"></div>
+                                            <div class="segment" style="width: 18.27869485720172%; background: #60A5FA;" title="Setup: 0.0001s"></div>
+                                            <div class="segment" style="width: 65.34301499792988%; background: #4ADE80;" title="Call: 0.0002s"></div>
+                                            <div class="segment" style="width: 16.378290144868394%; background: #F472B6;" title="Teardown: 0.0000s"></div>
                                         </div>
                                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-text-dim);">
                                             <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background: #60A5FA; border-radius: 50%;"></div> Setup</div>

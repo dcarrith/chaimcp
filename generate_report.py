@@ -221,10 +221,57 @@ def generate_html_report(test_results, coverage_results):
             .stats-grid {{ grid-template-columns: repeat(2, 1fr); }}
             .stats-grid > div:last-child {{ grid-column: span 2; }}
             .nav-links-desktop {{ display: none; }}
+            .mobile-menu-btn {{ display: block; }}
+        }}
+        @media (min-width: 1025px) {{
+            .mobile-menu-btn {{ display: none; }}
         }}
         @media (max-width: 768px) {{
             .stats-grid {{ grid-template-columns: 1fr; }}
             .stats-grid > div:last-child {{ grid-column: span 1; }}
+        }}
+        
+        .mobile-menu-btn {{
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem;
+        }}
+        
+        .mobile-menu {{
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 0.5rem;
+            background-color: rgba(28, 25, 23, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }}
+        
+        .mobile-menu.hidden {{ display: none; }}
+        
+        .mobile-menu a {{
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 1.125rem;
+            font-weight: 500;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: color 0.2s;
+        }}
+        .mobile-menu a:hover {{ color: var(--color-primary); }}
+        .mobile-menu .btn-primary {{
+            text-align: center;
+            margin-top: 0.5rem;
+            border-bottom: none;
         }}
         
         .card {{ 
@@ -396,11 +443,48 @@ def generate_html_report(test_results, coverage_results):
             <a href="https://mcpch.ai/#install" class="nav-link">Install</a>
             <a href="https://mcpch.ai/docs.html" class="nav-link">Docs</a>
             <a href="https://mcpch.ai/testing.html" class="nav-link">Testing</a>
-            <a href="https://mcpch.ai/security.html" class="nav-link">Security</a>
+            <a href="https://mcpch.ai/security.html" class="nav-link" style="color: var(--color-primary);">Security</a>
         </div>
         
-        <a href="https://mcpch.ai/#install" class="btn-primary">Get Started</a>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="https://mcpch.ai/#install" class="btn-primary" style="display: none; @media (min-width: 768px) {{ display: inline-block; }}">Get Started</a>
+            
+            <button id="mobile-menu-btn" class="mobile-menu-btn">
+                <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu hidden">
+            <a href="https://mcpch.ai/#features">Features</a>
+            <a href="https://mcpch.ai/#install">Install</a>
+            <a href="https://mcpch.ai/docs.html">Docs</a>
+            <a href="https://mcpch.ai/testing.html">Testing</a>
+            <a href="https://mcpch.ai/security.html">Security</a>
+            <a href="https://mcpch.ai/#install" class="btn-primary">Get Started</a>
+        </div>
     </nav>
+    
+    <script>
+        // Mobile Menu Logic
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let isMenuOpen = false;
+
+        if (menuBtn && mobileMenu) {{
+            menuBtn.addEventListener('click', () => {{
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {{
+                    mobileMenu.classList.remove('hidden');
+                    menuBtn.innerHTML = '<i data-lucide="x" style="width: 24px; height: 24px;"></i>';
+                }} else {{
+                    mobileMenu.classList.add('hidden');
+                    menuBtn.innerHTML = '<i data-lucide="menu" style="width: 24px; height: 24px;"></i>';
+                }}
+                lucide.createIcons();
+            }});
+        }}
+    </script>
     
     <div class="container">
         <div class="report-meta">
