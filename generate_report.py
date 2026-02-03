@@ -306,6 +306,73 @@ def generate_html_report(test_results, coverage_results):
         
         .metric {{ font-size: 3rem; font-weight: 700; margin: 0.5rem 0; color: white; line-height: 1; }}
         .metric-label {{ color: var(--color-text-dim); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 600; margin-top: 0.5rem; }}
+
+        /* Footer Styles for Non-Tailwind Page */
+        .site-footer {{
+            background-color: black;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 4rem 2rem;
+            margin-top: 4rem;
+        }}
+        
+        .footer-content {{
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }}
+        
+        @media (min-width: 768px) {{
+            .footer-content {{
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }}
+        }}
+        
+        .footer-brand {{
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            text-decoration: none;
+        }}
+        .footer-brand:hover {{ opacity: 1; }}
+        
+        .footer-logo {{
+            width: 2rem;
+            height: 2rem;
+            opacity: 0.9;
+        }}
+        
+        .footer-brand-text {{
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: white;
+        }}
+        
+        .footer-links {{
+            display: flex;
+            gap: 3rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #78716c; /* stone-500 */
+        }}
+        
+        .footer-link {{
+            color: #78716c;
+            text-decoration: none;
+            transition: color 0.2s;
+        }}
+        .footer-link:hover {{ color: white; }}
+        
+        .footer-copy {{
+            font-size: 0.875rem;
+            color: #57534e; /* stone-600 */
+        }}
     </style>
 </head>
 <body>
@@ -487,6 +554,26 @@ def generate_html_report(test_results, coverage_results):
             </table>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <a href="https://mcpch.ai/" class="footer-brand">
+                <img src="./assets/chai_logo.svg" alt="Chai Logo" class="footer-logo">
+                <span class="footer-brand-text">mcp<span style="color: #4ADE80;">ch.ai</span></span>
+            </a>
+
+            <div class="footer-links">
+                <a href="./docs.html" class="footer-link">Documentation</a>
+                <a href="#" class="footer-link">GitHub</a>
+                <a href="#" class="footer-link">License</a>
+            </div>
+
+            <div class="footer-copy">
+                &copy; 2026 ChaiMCP. Brewed for 🌱.
+            </div>
+        </div>
+    </footer>
 
     <script>
         lucide.createIcons();

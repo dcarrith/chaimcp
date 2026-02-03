@@ -450,7 +450,28 @@ def generate_html_report(bandit_results, safety_results, npm_results):
 
     html_content += f"""
         </div>
+        </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-white/10 py-16 px-8">
+        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                <img src="./assets/chai_logo.svg" alt="Chai Logo" class="w-8 h-8 opacity-90">
+                <span class="font-mono font-bold text-xl text-white">mcp<span class="text-secondary">ch.ai</span></span>
+            </div>
+
+            <div class="flex gap-12 text-base font-medium text-stone-500">
+                <a href="./docs.html" class="hover:text-white transition-colors">Documentation</a>
+                <a href="#" class="hover:text-white transition-colors">GitHub</a>
+                <a href="#" class="hover:text-white transition-colors">License</a>
+            </div>
+
+            <div class="text-sm text-stone-600">
+                &copy; 2026 ChaiMCP. Brewed for 🌱.
+            </div>
+        </div>
+    </footer>
 
     <script>
         lucide.createIcons();

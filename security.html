@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,31 +10,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-primary: #D4A373;
-            /* Chai/Latte tint */
-            --color-secondary: #CCD5AE;
-            /* Soft Green */
-            --color-bg: #0C0A09;
-            /* Dark Warm Black */
-            --color-card: #1C1917;
-            /* Darker Card */
-            --color-text: #E7E5E4;
-            /* Warm Grey */
+            --color-primary: #D4A373;   /* Chai/Latte tint */
+            --color-secondary: #CCD5AE; /* Soft Green */
+            --color-bg: #0C0A09;        /* Dark Warm Black */
+            --color-card: #1C1917;      /* Darker Card */
+            --color-text: #E7E5E4;      /* Warm Grey */
             --color-text-dim: #A8A29E;
-            --color-border: rgba(255, 255, 255, 0.08);
-
+            --color-border: rgba(255,255,255,0.08);
+            
             /* Severity Colors */
             --sev-critical: #EF4444;
             --sev-high: #F97316;
-            --sev-medium: #F59E0B;
+            --sev-medium: #F59E0B; 
             --sev-low: #3B82F6;
         }
-
+        
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--color-bg);
@@ -43,32 +35,29 @@
             margin: 0;
             padding-bottom: 4rem;
         }
-
+        
         .hero-pattern {
-            background-image:
+            background-image: 
                 radial-gradient(at 100% 0%, rgba(204, 213, 174, 0.15) 0px, transparent 50%),
                 radial-gradient(at 0% 100%, rgba(212, 163, 115, 0.1) 0px, transparent 50%);
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             z-index: -1;
             pointer-events: none;
         }
 
         .nav-link {
             position: relative;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255,255,255,0.8);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s;
         }
-
+        
         .nav-link:hover {
             color: var(--color-primary);
         }
-
+        
         .btn-primary {
             background: var(--color-primary);
             color: #1c1917;
@@ -78,7 +67,7 @@
             text-decoration: none;
             transition: all 0.2s;
         }
-
+        
         .btn-primary:hover {
             filter: brightness(1.1);
             box-shadow: 0 4px 12px rgba(212, 163, 115, 0.3);
@@ -90,19 +79,19 @@
             padding: 0 1.5rem;
             margin-top: 100px;
         }
-
+        
         .card {
             background: rgba(28, 25, 23, 0.6);
             backdrop-filter: blur(12px);
             border: 1px solid var(--color-border);
             border-radius: 16px;
             padding: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
             transition: transform 0.2s, border-color 0.2s;
         }
-
+        
         .card:hover {
-            border-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255,255,255,0.15);
         }
 
         .stats-grid {
@@ -120,7 +109,7 @@
             border-bottom: 1px solid var(--color-border);
             padding-bottom: 1rem;
         }
-
+        
         .severity-badge {
             padding: 4px 8px;
             border-radius: 6px;
@@ -129,45 +118,20 @@
             text-transform: uppercase;
             font-family: 'JetBrains Mono', monospace;
         }
+        
+        .bg-critical { background: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .bg-high { background: rgba(249, 115, 22, 0.2); color: #FDBA74; border: 1px solid rgba(249, 115, 22, 0.3); }
+        .bg-medium { background: rgba(245, 158, 11, 0.2); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .bg-low { background: rgba(59, 130, 246, 0.2); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.3); }
 
-        .bg-critical {
-            background: rgba(239, 68, 68, 0.2);
-            color: #FCA5A5;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .bg-high {
-            background: rgba(249, 115, 22, 0.2);
-            color: #FDBA74;
-            border: 1px solid rgba(249, 115, 22, 0.3);
-        }
-
-        .bg-medium {
-            background: rgba(245, 158, 11, 0.2);
-            color: #FCD34D;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .bg-low {
-            background: rgba(59, 130, 246, 0.2);
-            color: #93C5FD;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-
-        details>summary {
+        details > summary {
             list-style: none;
             cursor: pointer;
             transition: background 0.15s;
         }
-
-        details>summary::-webkit-details-marker {
-            display: none;
-        }
-
-        details>summary:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
+        details > summary::-webkit-details-marker { display: none; }
+        details > summary:hover { background: rgba(255,255,255,0.03); }
+        
         .code-block {
             margin-top: 1rem;
             border-radius: 8px;
@@ -175,30 +139,27 @@
             border: 1px solid var(--color-border);
             font-size: 0.85rem;
         }
-
+        
         /* Chart container override */
         .chart-container {
-            position: relative;
-            height: 160px;
-            width: 100%;
-            display: flex;
+            position: relative; 
+            height: 160px; 
+            width: 100%; 
+            display: flex; 
             justify-content: center;
         }
     </style>
 </head>
-
 <body class="bg-background">
     <div class="hero-pattern"></div>
-
+    
     <!-- Navigation -->
-    <nav
-        class="fixed top-4 left-4 right-4 max-w-[1600px] mx-auto z-50 bg-[#1C1917]/80 backdrop-blur-md rounded-xl shadow-sm border border-white/5 px-8 py-4 flex items-center justify-between">
+    <nav class="fixed top-4 left-4 right-4 max-w-[1600px] mx-auto z-50 bg-[#1C1917]/80 backdrop-blur-md rounded-xl shadow-sm border border-white/5 px-8 py-4 flex items-center justify-between">
         <a href="https://mcpch.ai/" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
             <div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center">
                 <img src="./assets/chai_logo.svg" alt="Chai Logo" class="w-6 h-6">
             </div>
-            <span class="font-mono font-bold text-xl tracking-tight text-white">mcp<span
-                    class="text-secondary">ch.ai</span></span>
+            <span class="font-mono font-bold text-xl tracking-tight text-white">mcp<span class="text-secondary">ch.ai</span></span>
         </a>
         <div class="hidden md:flex items-center gap-8">
             <a href="https://mcpch.ai/#features" class="nav-link">Features</a>
@@ -217,28 +178,22 @@
                 <p style="color: var(--color-text-dim); margin-top: 0.5rem;">Automated Analysis Pipeline</p>
             </div>
             <div style="text-align: right;">
-                <div style="color: var(--color-text-dim); font-size: 0.75rem; text-transform: uppercase;">Generated
-                </div>
-                <div style="color: white; font-family: 'JetBrains Mono';">2026-02-03 00:35:57</div>
+                <div style="color: var(--color-text-dim); font-size: 0.75rem; text-transform: uppercase;">Generated</div>
+                <div style="color: white; font-family: 'JetBrains Mono';">2026-02-03 01:06:51</div>
             </div>
         </div>
 
         <div class="stats-grid">
             <!-- Score Card -->
-            <div class="card"
-                style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-                <h3
-                    style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">
-                    Security Score</h3>
-                <div style="font-size: 4rem; font-weight: 800; color: #4ADE80; line-height: 1;">100</div>
+            <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                <h3 style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Security Score</h3>
+                <div style="font-size: 4rem; font-weight: 800; color: #4ADE80; line-height: 1;">80</div>
                 <div style="font-size: 0.9rem; color: var(--color-text-dim); margin-top: 0.5rem;">Pipeline Health</div>
             </div>
 
             <!-- Vulnerabilities Chart -->
             <div class="card">
-                <h3
-                    style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">
-                    Vulnerabilities</h3>
+                <h3 style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Vulnerabilities</h3>
                 <div class="chart-container">
                     <canvas id="vulnChart"></canvas>
                 </div>
@@ -246,37 +201,28 @@
 
             <!-- Scanner Status -->
             <div class="card">
-                <h3
-                    style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">
-                    Scanners Run</h3>
+                <h3 style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Scanners Run</h3>
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
                         <span style="font-weight: 500;">Bandit (SAST)</span>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span
-                                style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">0
-                                Issues</span>
+                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">0 Issues</span>
                             <i data-lucide="check-circle" style="color: #4ADE80; width: 16px;"></i>
                         </div>
                     </div>
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
                         <span style="font-weight: 500;">Safety (Deps)</span>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span
-                                style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">
-                                0 Issues
+                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">
+                                Failed / Timeout
                             </span>
-                            <i data-lucide="check-circle" style="color: #4ADE80; width: 16px;"></i>
+                            <i data-lucide="alert-triangle" style="color: #EF4444; width: 16px;"></i>
                         </div>
                     </div>
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
                         <span style="font-weight: 500;">NPM Audit</span>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span
-                                style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">
+                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">
                                 0 Issues
                             </span>
                             <i data-lucide="check-circle" style="color: #4ADE80; width: 16px;"></i>
@@ -287,47 +233,19 @@
         </div>
 
         <!-- Bandit Findings -->
-        <h2
-            style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; border-left: 4px solid var(--color-primary); padding-left: 1rem;">
-            Code Analysis Findings</h2>
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; border-left: 4px solid var(--color-primary); padding-left: 1rem;">Code Analysis Findings</h2>
         <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem;">
-            <div class="card" style="text-align: center; color: var(--color-text-dim);">No code vulnerabilities issues
-                found. Great job! 🎉</div>
+    <div class="card" style="text-align: center; color: var(--color-text-dim);">No code vulnerabilities issues found. Great job! 🎉</div>
         </div>
 
         <!-- Safety Findings -->
-        <h2
-            style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; border-left: 4px solid var(--color-secondary); padding-left: 1rem;">
-            Dependency Findings</h2>
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; border-left: 4px solid var(--color-secondary); padding-left: 1rem;">Dependency Findings</h2>
         <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem;">
-            <div class="card" style="text-align: center; color: var(--color-text-dim);">No dependency vulnerabilities
-                found. 🎉</div>
+    <div class="card" style="text-align: center; color: var(--sev-high);">Safety scan failed or timed out. Please check connectivity.</div>
+        </div>
         </div>
     </div>
 
-    <script>
-        lucide.createIcons();
-        Prism.highlightAll();
-
-        // Vuln Chart
-        new Chart(document.getElementById('vulnChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['High', 'Medium', 'Low', 'Dependencies'],
-                datasets: [{
-                    data: [0, 0, 0, 0],
-                    backgroundColor: ['#F97316', '#F59E0B', '#3B82F6', '#A8A29E'],
-                    borderWidth: 0,
-                    cutout: '75%'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'right', labels: { color: '#A8A29E', font: { size: 10 } } } }
-            }
-        });
-    </script>
     <!-- Footer -->
     <footer class="bg-black border-t border-white/10 py-16 px-8">
         <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
@@ -347,6 +265,29 @@
             </div>
         </div>
     </footer>
-</body>
 
+    <script>
+        lucide.createIcons();
+        Prism.highlightAll();
+        
+        // Vuln Chart
+        new Chart(document.getElementById('vulnChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['High', 'Medium', 'Low', 'Dependencies'],
+                datasets: [{
+                    data: [0, 0, 0, 0],
+                    backgroundColor: ['#F97316', '#F59E0B', '#3B82F6', '#A8A29E'],
+                    borderWidth: 0,
+                    cutout: '75%'
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { position: 'right', labels: { color: '#A8A29E', font: { size: 10 } } } } 
+            }
+        });
+    </script>
+</body>
 </html>
