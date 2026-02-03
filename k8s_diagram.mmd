@@ -9,6 +9,7 @@ subgraph ExternalWorld ["External World"]
 direction TB
 style ExternalWorld fill:#1c1917,stroke:#57534e,color:#fff,stroke-dasharray: 5 5
 UserTraffic["<i class='fa fa-users'></i> User Traffic"]:::node
+AgenticIDE["<i class='fa fa-laptop-code'></i> Agentic IDE"]:::node
 LetsEncrypt["<i class='fa fa-lock'></i> Let's Encrypt ACME"]:::ext
 Internet["<i class='fa fa-globe'></i> Internet / External"]:::ext
 end
@@ -26,6 +27,7 @@ direction TB
 style ClusterDefault fill:#292524,stroke:#57534e,color:#fff
 Ingress["<i class='fa fa-arrow-right-to-bracket'></i> Ingress Controller"]:::node
 ACMESolver["<i class='fa fa-check'></i> ACME Solver"]:::node
+Secrets["<i class='fa fa-key'></i> Secret: chaimcp-secrets"]:::pod
 PodChai["🍵 Pod: chaimcp"]:::pod
 OtherPods["<i class='fa fa-cubes'></i> Other Pods"]:::ext
 end
@@ -46,6 +48,7 @@ end
 
 %% Traffic Flow
 UserTraffic -- "HTTPS" --> Ingress
+AgenticIDE -- "Token Auth (SSE)" --> Ingress
 Ingress -- "HTTP-01 Challenge" --> ACMESolver
 ACMESolver -- "Validation" --> LetsEncrypt
 
@@ -56,6 +59,9 @@ CertController -.-> ACMESolver
 %% Ingress to App
 Ingress -- "Allow: 4443" --> PodChai
 
+%% Secrets
+Secrets -. "Mount / Read" .-> PodChai
+
 %% App Dependencies
 PodChai --> CoreDNS
 PodChai --> SvcNode
@@ -65,3 +71,6 @@ PodChai --> SvcData
 %% Network Policies
 PodChai -. "Block: Deny All" .-> Internet
 OtherPods -. "Block: Deny All" .-> PodChai
+
+%% Chia Services Networking
+SvcNode <== "Port 8444 (Ingress/Egress)" ==> Internet

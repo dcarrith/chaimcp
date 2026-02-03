@@ -120,6 +120,22 @@
                 network or the LLM.
             </p>
 
+            <h1 class="text-4xl lg:text-6xl font-bold mb-12 text-white">Kubernetes Architecture for ChaiMCP</h1>
+
+            <!-- K8s Architecture Diagram -->
+            <div class="mt-8 bg-[#0f0e0e] rounded-xl border border-white/10 p-2 overflow-hidden max-w-4xl mx-auto">
+                <img src="./assets/k8s_network_architecture.png" alt="Kubernetes Network Architecture"
+                    class="w-full h-auto rounded-lg opacity-90 hover:opacity-100 transition-opacity">
+            </div>
+
+            <!-- K8s Architecture Note -->
+            <p class="mt-8 text-xl text-text/60 max-w-4xl mx-auto mb-16">
+                Visualizing how ChaiMCP server is allowed to access the Chia services, but nothing else is isolating your blockchain node certs and keys from
+                the AI agent and network.
+                The agent requests data from ChaiMCP which relays the requests to the appropriate PRC APIs which are never exposed to the
+                network or the LLM.
+            </p>
+
             <!-- Configuration Section -->
             <div class="text-left max-w-4xl mx-auto">
                 <h2 class="text-3xl font-bold text-white mb-8 border-b border-white/10 pb-4">Connect your Agent</h2>
@@ -228,14 +244,6 @@
                             * Ensure you have port-forwarded the service (e.g.,
                             <code>kubectl port-forward svc/chaimcp 4443:443</code>) or utilize an Ingress.
                         </p>
-
-                        <!-- K8s Architecture Diagram -->
-                        <div class="mt-8 bg-[#0f0e0e] rounded-xl border border-white/10 p-2 overflow-hidden">
-                            <h4 class="text-sm font-bold text-stone-400 mb-2 px-2 uppercase tracking-wider">Network
-                                Architecture</h4>
-                            <img src="./assets/k8s_network_architecture.png" alt="Kubernetes Network Architecture"
-                                class="w-full h-auto rounded-lg opacity-90 hover:opacity-100 transition-opacity">
-                        </div>
                     </div>
                 </div>
             </div>
