@@ -26,23 +26,35 @@ def run_safety():
     print("running safety...")
     try:
         # --json: Output JSON
-        # Scan is the new command
-        print("skipping safety (timeout)...")
-        return {}
-        # result = subprocess.run(
-        #     ['safety', 'scan', '--json'],
-        #     capture_output=True,
-        #     text=True
-        # ) # nosec
+        # Run with timeout to prevent hanging
+        result = subprocess.run(
+            ['safety', 'check', '--json'], # Note: 'check' is often the command for older versions, 'scan' for newer. Using check based on typical CI usage, or we can try 'scan' if check fails. Let's stick to what was commented out but check flags.
+            # Actually, standard safety is `safety check --json`. If the user has a newer version it might be `safety scan`.
+            # Let's try `safety check --json` as a primary attempt.
+            capture_output=True,
+            text=True,
+            timeout=30 
+        ) # nosec
+        
         output = result.stdout
         # Safety might output text before JSON (deprecation warnings)
         json_start = output.find('{')
         if json_start != -1:
             output = output[json_start:]
-        return json.loads(output)
+        
+        # Use raw_decode to handle trailing garbage (deprecation warnings etc)
+        try:
+            obj, _ = json.JSONDecoder().raw_decode(output)
+            return obj
+        except Exception:
+             # Fallback to loads if raw_decode fails or just to try standard parsing
+            return json.loads(output)
+    except subprocess.TimeoutExpired:
+        print("Error: safety scan timed out")
+        return None # Return None to indicate failure/timeout
     except Exception as e:
         print(f"Error running safety: {e}")
-        return {}
+        return None
 
 def run_npm_audit():
     """Runs npm audit on Node.js dependencies."""
@@ -73,26 +85,38 @@ def generate_html_report(bandit_results, safety_results, npm_results):
     # Safety returns a list of issues or a dict with "vulnerabilities" key depending on version
     # Adjust based on installed version output structure
     safety_issues = []
-    if isinstance(safety_results, list):
+    safety_failed = False
+    
+    if safety_results is None:
+        safety_failed = True
+        safety_count = 0 # Don't add to score penalty directly, but handle logic below
+    elif isinstance(safety_results, list):
         safety_issues = safety_results
+        safety_count = len(safety_issues)
     elif isinstance(safety_results, dict):
         safety_issues = safety_results.get('vulnerabilities', [])
-    
-    safety_count = len(safety_issues)
-
-    # --- Process NPM Data ---
-    npm_advisories = npm_results.get('advisories', {})
-    # Modern npm audit returns 'vulnerabilities' dict usually
-    if 'vulnerabilities' in npm_results:
-        # Count based on severity
-        npm_vulns = npm_results['vulnerabilities']
-        npm_critical = npm_vulns.get('critical', 0)
-        npm_high = npm_vulns.get('high', 0)
-        npm_moderate = npm_vulns.get('moderate', 0)
-        npm_low = npm_vulns.get('low', 0)
-        npm_total = npm_critical + npm_high + npm_moderate + npm_low
+        safety_count = len(safety_issues)
     else:
-        npm_total = len(npm_advisories)
+        safety_count = 0
+    
+    # --- Process NPM Data ---
+    npm_failed = False
+    if npm_results is None:
+        npm_failed = True
+        npm_total = 0
+    else:
+        npm_advisories = npm_results.get('advisories', {})
+        # Modern npm audit returns 'vulnerabilities' dict usually
+        if 'vulnerabilities' in npm_results:
+            # Count based on severity
+            npm_vulns = npm_results['vulnerabilities']
+            npm_critical = npm_vulns.get('critical', 0)
+            npm_high = npm_vulns.get('high', 0)
+            npm_moderate = npm_vulns.get('moderate', 0)
+            npm_low = npm_vulns.get('low', 0)
+            npm_total = npm_critical + npm_high + npm_moderate + npm_low
+        else:
+            npm_total = len(npm_advisories)
         
     # --- Aggregate Metrics ---
     total_high = bandit_high
@@ -102,7 +126,15 @@ def generate_html_report(bandit_results, safety_results, npm_results):
     # Calculate simplistic security score
     # Start at 100
     # Current simplistic model: High/Critical deduction
+    # If a scanner failed, we impose a max score penalty or cap the score
     security_score = 100 - (total_high * 10) - (total_medium * 3) - (total_low * 1) - (safety_count * 5) - (npm_total * 2) 
+    
+    if safety_failed or npm_failed:
+        # Penalize for missing scanners to prevent "Perfect" score on failure
+        # Or just cap it. Let's deduct 20 points per failed scanner to be visible.
+        if safety_failed: security_score -= 20
+        if npm_failed: security_score -= 20
+        
     if security_score < 0: security_score = 0
     
     score_color = "#4ADE80" # Green
@@ -324,15 +356,19 @@ def generate_html_report(bandit_results, safety_results, npm_results):
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
                         <span style="font-weight: 500;">Safety (Deps)</span>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">{safety_count} Issues</span>
-                            <i data-lucide="check-circle" style="color: #4ADE80; width: 16px;"></i>
+                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">
+                                { "Failed / Timeout" if safety_failed else f"{safety_count} Issues" }
+                            </span>
+                            <i data-lucide="{ 'alert-triangle' if safety_failed else 'check-circle' }" style="color: { '#EF4444' if safety_failed else '#4ADE80' }; width: 16px;"></i>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
                         <span style="font-weight: 500;">NPM Audit</span>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">{npm_total} Issues</span>
-                            <i data-lucide="check-circle" style="color: #4ADE80; width: 16px;"></i>
+                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">
+                                { "Failed" if npm_failed else f"{npm_total} Issues" }
+                            </span>
+                            <i data-lucide="{ 'alert-triangle' if npm_failed else 'check-circle' }" style="color: { '#EF4444' if npm_failed else '#4ADE80' }; width: 16px;"></i>
                         </div>
                     </div>
                 </div>
@@ -388,7 +424,9 @@ def generate_html_report(bandit_results, safety_results, npm_results):
         <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem;">
     """
     
-    if not safety_issues:
+    if safety_failed:
+        html_content += '<div class="card" style="text-align: center; color: var(--sev-high);">Safety scan failed or timed out. Please check connectivity.</div>'
+    elif not safety_issues:
         html_content += '<div class="card" style="text-align: center; color: var(--color-text-dim);">No dependency vulnerabilities found. 🎉</div>'
         
     for issue in safety_issues:

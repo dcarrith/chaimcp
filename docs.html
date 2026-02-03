@@ -78,6 +78,8 @@
             <a href="./index.html" class="font-mono font-bold text-xl tracking-tight text-white">mcp<span
                     class="text-secondary">ch.ai</span></a>
         </div>
+
+        <!-- Desktop Menu -->
         <div class="hidden md:flex items-center gap-8">
             <a href="./index.html#features"
                 class="font-medium hover:text-primary transition-colors text-white/80">Features</a>
@@ -88,7 +90,32 @@
             <a href="./security.html"
                 class="font-medium hover:text-primary transition-colors text-white/80">Security</a>
         </div>
-        <a href="./index.html#install" class="btn-primary py-2 px-4 text-sm shadow-none">Get Started</a>
+
+        <div class="flex items-center gap-4">
+            <a href="./index.html#install" class="hidden md:inline-flex btn-primary py-2 px-4 text-sm shadow-none">Get
+                Started</a>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-white hover:text-primary transition-colors p-1">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu"
+            class="hidden absolute top-full left-0 right-0 mt-2 bg-[#1C1917]/95 backdrop-blur-xl border border-white/10 rounded-xl p-6 flex flex-col gap-4 md:hidden shadow-2xl">
+            <a href="./index.html#features"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Features</a>
+            <a href="./index.html#install"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Install</a>
+            <a href="#" class="font-medium text-lg text-primary transition-colors border-b border-white/5 pb-2">Docs</a>
+            <a href="./testing.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Testing</a>
+            <a href="./security.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Security</a>
+            <a href="./index.html#install" class="btn-primary py-3 px-4 text-center justify-center shadow-none mt-2">Get
+                Started</a>
+        </div>
     </nav>
 
     <!-- Main Content -->
@@ -130,9 +157,11 @@
 
             <!-- K8s Architecture Note -->
             <p class="mt-8 text-xl text-text/60 max-w-4xl mx-auto mb-16">
-                Visualizing how ChaiMCP server is allowed to access the Chia services, but nothing else is isolating your blockchain node certs and keys from
+                Visualizing how ChaiMCP server is allowed to access the Chia services, but nothing else is isolating
+                your blockchain node certs and keys from
                 the AI agent and network.
-                The agent requests data from ChaiMCP which relays the requests to the appropriate PRC APIs which are never exposed to the
+                The agent requests data from ChaiMCP which relays the requests to the appropriate PRC APIs which are
+                never exposed to the
                 network or the LLM.
             </p>
 
@@ -274,6 +303,27 @@
     <script>
         // Initialize Icons
         lucide.createIcons();
+
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let isMenuOpen = false;
+
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {
+                    mobileMenu.classList.remove('hidden');
+                    // Change icon to X
+                    menuBtn.innerHTML = '<i data-lucide="x" class="w-6 h-6"></i>';
+                } else {
+                    mobileMenu.classList.add('hidden');
+                    // Change icon back to Menu
+                    menuBtn.innerHTML = '<i data-lucide="menu" class="w-6 h-6"></i>';
+                }
+                lucide.createIcons();
+            });
+        }
     </script>
 </body>
 

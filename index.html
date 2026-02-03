@@ -92,6 +92,8 @@
             <span class="font-mono font-bold text-xl tracking-tight text-white">mcp<span
                     class="text-secondary">ch.ai</span></span>
         </a>
+
+        <!-- Desktop Menu -->
         <div class="hidden md:flex items-center gap-8">
             <a href="#features" class="font-medium hover:text-primary transition-colors text-white/80">Features</a>
             <a href="#install" class="font-medium hover:text-primary transition-colors text-white/80">Install</a>
@@ -100,7 +102,31 @@
             <a href="./security.html"
                 class="font-medium hover:text-primary transition-colors text-white/80">Security</a>
         </div>
-        <a href="#install" class="btn-primary py-2 px-4 text-sm shadow-none">Get Started</a>
+
+        <div class="flex items-center gap-4">
+            <a href="#install" class="hidden md:inline-flex btn-primary py-2 px-4 text-sm shadow-none">Get Started</a>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-white hover:text-primary transition-colors p-1">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu"
+            class="hidden absolute top-full left-0 right-0 mt-2 bg-[#1C1917]/95 backdrop-blur-xl border border-white/10 rounded-xl p-6 flex flex-col gap-4 md:hidden shadow-2xl">
+            <a href="#features"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Features</a>
+            <a href="#install"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Install</a>
+            <a href="./docs.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Docs</a>
+            <a href="./testing.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Testing</a>
+            <a href="./security.html"
+                class="font-medium text-lg hover:text-primary transition-colors text-white/90 border-b border-white/5 pb-2">Security</a>
+            <a href="#install" class="btn-primary py-3 px-4 text-center justify-center shadow-none mt-2">Get Started</a>
+        </div>
     </nav>
 
     <!-- Hero Section -->
@@ -415,6 +441,25 @@
     <script>
         // Initialize Icons
         lucide.createIcons();
+
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let isMenuOpen = false;
+
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {
+                    mobileMenu.classList.remove('hidden');
+                    menuBtn.innerHTML = '<i data-lucide="x" class="w-6 h-6"></i>';
+                } else {
+                    mobileMenu.classList.add('hidden');
+                    menuBtn.innerHTML = '<i data-lucide="menu" class="w-6 h-6"></i>';
+                }
+                lucide.createIcons();
+            });
+        }
 
         // Scroll Animation Observer
         const observer = new IntersectionObserver((entries) => {
