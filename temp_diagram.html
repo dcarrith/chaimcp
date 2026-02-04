@@ -82,6 +82,8 @@
             direction TB
             style ClusterDefault fill:#292524,stroke:#57534e,color:#fff
             Ingress["<i class='fa fa-arrow-right-to-bracket'></i> Ingress Controller"]:::node
+            Secrets["<i class='fa fa-key'></i> Secret: chaimcp-auth"]:::pod
+            TlsSecret["<i class='fa fa-lock'></i> Secret: chaimcp-tls"]:::pod
             PodChai["<img src='./assets/favicon.png' class='img-icon' /> Pod: chaimcp"]:::pod
             OtherPods["<i class='fa fa-cubes'></i> Other Pods"]:::ext
             end
@@ -104,8 +106,13 @@
             Ingress -- "ACME Challenge" --> LetsEncrypt
 
             CertController -.-> Ingress
+            CertController -.-> ACMESolver
 
             Ingress -- "Allow: 4443" --> PodChai
+
+            %% Secrets
+            Secrets -. "Mount / Read" .-> PodChai
+            TlsSecret -. "Mount / Read" .-> PodChai
 
             PodChai --> CoreDNS
             PodChai --> SvcNode
