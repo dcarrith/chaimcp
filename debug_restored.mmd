@@ -1,0 +1,76 @@
+%%{init: {'theme': 'dark', 'look': 'handDrawn', 'themeVariables': { 'fontSize': '16px', 'fontFamily': 'IBM Plex Sans' }}}%%
+flowchart TB
+classDef box fill:#292524,stroke:#57534e,stroke-width:2px,color:#fff
+classDef node fill:#1C1917,stroke:#FBBF24,stroke-width:2px,color:#fff
+classDef pod fill:#1C1917,stroke:#4ADE80,stroke-width:2px,color:#fff
+classDef ext fill:#1C1917,stroke:#a8a29e,stroke-width:2px,stroke-dasharray: 5 5,color:#fff
+
+subgraph ExternalWorld ["External World"]
+direction TB
+style ExternalWorld fill:#1c1917,stroke:#57534e,color:#fff,stroke-dasharray: 5 5
+UserTraffic["<i class='fa fa-users'></i> User Traffic"]:::node
+AgenticIDE["<i class='fa fa-laptop-code'></i> Agentic IDE"]:::node
+LetsEncrypt["<i class='fa fa-lock'></i> Let's Encrypt ACME"]:::ext
+Internet["<i class='fa fa-globe'></i> Internet / External"]:::ext
+end
+
+subgraph ClusterCertManager ["Namespace: cert-manager"]
+direction TB
+style ClusterCertManager fill:#292524,stroke:#57534e,color:#fff
+CertController["<i class='fa fa-certificate'></i> Controller"]:::node
+CertWebhook["<i class='fa fa-hashtag'></i> Webhook"]:::node
+CertInjector["<i class='fa fa-syringe'></i> CA Injector"]:::node
+end
+
+subgraph ClusterDefault ["Namespace: default"]
+direction TB
+style ClusterDefault fill:#292524,stroke:#57534e,color:#fff
+Ingress["<i class='fa fa-arrow-right-to-bracket'></i> Ingress Controller"]:::node
+ACMESolver["<i class='fa fa-check'></i> ACME Solver"]:::node
+Secrets["<i class='fa fa-key'></i> Secret: chaimcp-secrets"]:::pod
+PodChai["🍵 Pod: chaimcp"]:::pod
+OtherPods["<i class='fa fa-cubes'></i> Other Pods"]:::ext
+end
+
+subgraph ClusterKubeSystem ["Namespace: kube-system"]
+direction TB
+style ClusterKubeSystem fill:#292524,stroke:#57534e,color:#fff
+CoreDNS["<i class='fa fa-network-wired'></i> CoreDNS"]:::node
+end
+
+subgraph ClusterChia ["Namespace: chia"]
+direction TB
+style ClusterChia fill:#292524,stroke:#57534e,color:#fff
+SvcNode["<i class='fa fa-leaf'></i> Service: chia-node"]:::pod
+SvcWallet["<i class='fa fa-wallet'></i> Service: chia-wallet"]:::pod
+SvcData["<i class='fa fa-database'></i> Service: chia-datalayer"]:::pod
+end
+
+%% Traffic Flow
+UserTraffic -- "HTTPS" --> Ingress
+AgenticIDE -- "Token Auth (SSE)" --> Ingress
+Ingress -- "HTTP-01 Challenge" --> ACMESolver
+ACMESolver -- "Validation" --> LetsEncrypt
+
+%% Cert Manager Logic
+CertController -.-> Ingress
+CertController -.-> ACMESolver
+
+%% Ingress to App
+Ingress -- "Allow: 4443" --> PodChai
+
+%% Secrets
+Secrets -. "Mount / Read" .-> PodChai
+
+%% App Dependencies
+PodChai --> CoreDNS
+PodChai --> SvcNode
+PodChai --> SvcWallet
+PodChai --> SvcData
+
+%% Network Policies
+PodChai -. "Block: Deny All" .-> Internet
+OtherPods -. "Block: Deny All" .-> PodChai
+
+%% Chia Services Networking
+SvcNode <== "Port 8444 (Ingress/Egress)" ==> Internet
