@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .node { fill: #2d2d30; stroke: #d4d4d4; stroke-width: 2; }
+      .edge { stroke: #d4d4d4; stroke-width: 2; }
+      .label { fill: #d4d4d4; font-family: Arial, sans-serif; font-size: 12px; }
+    </style>
+  </defs>
+  
+  <!-- Generated from Mermaid code: %%{init: {'theme': 'dark', 'look': 'handDrawn', 't... -->
+  <rect class="node" x="50" y="50" width="100" height="40" rx="5"/>
+  <text class="label" x="100" y="75" text-anchor="middle">Start</text>
+  
+  <line class="edge" x1="150" y1="70" x2="200" y2="70" marker-end="url(#arrow)"/>
+  
+  <rect class="node" x="200" y="50" width="100" height="40" rx="5"/>
+  <text class="label" x="250" y="75" text-anchor="middle">Process</text>
+  
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#d4d4d4"/>
+    </marker>
+  </defs>
+</svg>

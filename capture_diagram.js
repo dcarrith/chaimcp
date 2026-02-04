@@ -8,8 +8,8 @@ const path = require('path');
     });
     const page = await browser.newPage();
 
-    // Set viewport to a high resolution
-    await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 2 });
+    // Set viewport to 4k resolution with high pixel density
+    await page.setViewport({ width: 3840, height: 2160, deviceScaleFactor: 3 });
 
     const fileUrl = 'file://' + path.resolve('temp_diagram.html');
     console.log('Navigating to:', fileUrl);
