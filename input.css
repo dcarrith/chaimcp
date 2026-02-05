@@ -33,6 +33,14 @@
     --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
 }
 
+@layer base {
+
+    html,
+    body {
+        overflow-x: hidden;
+    }
+}
+
 @layer components {
     .btn-primary {
         @apply bg-cta text-black px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer hover:opacity-90 hover:-translate-y-px shadow-md hover:shadow-lg inline-block;
