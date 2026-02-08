@@ -25,7 +25,12 @@ class TestKubernetesManifests(unittest.TestCase):
         self.assertTrue(len(containers) > 0)
         chaimcp = containers[0]
         self.assertEqual(chaimcp['image'], 'chaimcp:latest')
-        self.assertEqual(chaimcp['ports'][0]['containerPort'], 4443)
+        self.assertEqual(chaimcp['image'], 'chaimcp:latest')
+        self.assertEqual(chaimcp['ports'][0]['containerPort'], 8000)
+        
+        # Check config map usage
+        self.assertIn('envFrom', chaimcp)
+        self.assertEqual(chaimcp['envFrom'][0]['configMapRef']['name'], 'chaimcp-config')
 
     def test_service_manifest(self):
         docs = self.load_yaml("service.yaml")
@@ -33,8 +38,8 @@ class TestKubernetesManifests(unittest.TestCase):
         service = docs[0]
         self.assertEqual(service['kind'], 'Service')
         self.assertEqual(service['metadata']['name'], 'chaimcp')
-        self.assertEqual(service['spec']['ports'][0]['port'], 443)
-        self.assertEqual(service['spec']['ports'][0]['targetPort'], 4443)
+        self.assertEqual(service['spec']['ports'][0]['port'], 80)
+        self.assertEqual(service['spec']['ports'][0]['targetPort'], 8000)
 
     def test_ingress_manifest(self):
         docs = self.load_yaml("ingress.yaml")

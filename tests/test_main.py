@@ -135,6 +135,22 @@ class TestMain(unittest.TestCase):
         self.assertEqual(kwargs["ssl_keyfile"], "k")
         self.assertEqual(kwargs["ssl_certfile"], "c")
 
+    @patch("uvicorn.run")
+    @patch("chaimcp.main.mcp")
+    @patch.dict(os.environ, {"MCP_TRANSPORT": "http", "MCP_PORT": "8000"})
+    @patch("os.path.exists")
+    def test_main_http_prod_config(self, mock_exists, mock_mcp, mock_uvicorn):
+        """Test main execution with production config (HTTP, Port 8000, No SSL)."""
+        mock_exists.return_value = False # Simulate no SSL files
+        
+        main_module.main()
+        
+        mock_mcp.streamable_http_app.assert_called_once()
+        mock_uvicorn.assert_called_once()
+        args, kwargs = mock_uvicorn.call_args
+        self.assertEqual(kwargs["port"], 8000)
+        self.assertNotIn("ssl_keyfile", kwargs)
+
     def test_auth_token_env(self):
         """Test global auth settings initialization with env var."""
         with patch.dict(os.environ, {"MCP_AUTH_TOKEN": "test-token"}):

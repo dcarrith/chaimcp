@@ -9,16 +9,14 @@ metadata:
     # Standard NGINX Ingress class
     kubernetes.io/ingress.class: "nginx"
 
-    # Backend talks HTTPS (ChaiMCP creates its own self-signed cert)
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-
-    # Tell NGINX to trust the backend's self-signed cert
-    # (Since we are terminating valid SSL at Ingress, but backend is also encrypted)
-    nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
+    # Backend talks HTTP now
+    # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    # nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
 spec:
   tls:
     - hosts:
         - mcpch.ai
+        - pki.mcpch.ai
       secretName: chaimcp-tls
   rules:
     - host: mcpch.ai
@@ -30,4 +28,14 @@ spec:
               service:
                 name: chaimcp
                 port:
-                  number: 443
+                  number: 80
+    - host: pki.mcpch.ai
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: chaimcp
+                port:
+                  number: 80

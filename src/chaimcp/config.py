@@ -5,6 +5,17 @@ from typing import Dict, Any, Optional
 
 DEFAULT_CHIA_ROOT = Path(os.path.expanduser("~/.chia/mainnet"))
 
+
+def get_mcp_auth_enabled() -> bool:
+    """Check if MCP authentication is enabled (default: True)."""
+    val = os.environ.get("MCP_AUTH_ENABLED", "true").lower()
+    return val in ("true", "1", "yes", "on")
+
+def get_letsencrypt_enabled() -> bool:
+    """Check if Let's Encrypt is enabled (default: True)."""
+    val = os.environ.get("LETSENCRYPT_ENABLED", "true").lower()
+    return val in ("true", "1", "yes", "on")
+
 def get_chia_root() -> Path:
     """Get the Chia root directory via environment variable or default."""
     return Path(os.environ.get("CHIA_ROOT", DEFAULT_CHIA_ROOT))

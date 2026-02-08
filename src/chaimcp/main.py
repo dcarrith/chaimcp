@@ -1,6 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 from mcp.server.auth.settings import AuthSettings
 from mcp.server.auth.provider import TokenVerifier, AccessToken
+from .config import get_mcp_auth_enabled
 from .chia_client import ChiaRpcClient
 import json
 import os
@@ -24,7 +25,7 @@ auth_token = os.environ.get("MCP_AUTH_TOKEN")
 auth_settings = None
 token_verifier = None
 
-if auth_token:
+if get_mcp_auth_enabled() and auth_token:
     # We must provide AuthSettings if we provide a verifier, even if we don't use the issuer/resource_url logic
     auth_settings = AuthSettings(
         issuer_url="http://localhost",

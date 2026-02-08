@@ -7,6 +7,6 @@ spec:
   selector:
     app: chaimcp
   ports:
-    - port: 443
-      targetPort: 4443
+    - port: 80
+      targetPort: 8000
       protocol: TCP

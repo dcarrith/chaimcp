@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  CHIA_DATALAYER_HOST: chia-datalayer-daemon.chia.svc.cluster.local
+  CHIA_DATALAYER_PORT: "8562"
+  CHIA_FULL_NODE_HOST: chia-datalayer-daemon.chia.svc.cluster.local
+  CHIA_FULL_NODE_PORT: "8555"
+  CHIA_WALLET_HOST: chia-datalayer-daemon.chia.svc.cluster.local
+  CHIA_WALLET_PORT: "9256"
+  MCP_AUTH_ENABLED: "true"
+  LETSENCRYPT_ENABLED: "true"
+kind: ConfigMap
+metadata:
+  annotations: {}
+  name: chaimcp-config
+  namespace: default
+  resourceVersion: "11649614"
+  uid: f11c7af5-1594-462b-9a5a-afc9ab6e7497

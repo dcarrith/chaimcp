@@ -2,7 +2,7 @@ import os
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
 from pathlib import Path
-from chaimcp.config import get_chia_root, load_chia_config, get_ssl_paths
+from chaimcp.config import get_chia_root, load_chia_config, get_ssl_paths, get_mcp_auth_enabled, get_letsencrypt_enabled
 
 class TestConfig(unittest.TestCase):
 
@@ -78,3 +78,23 @@ class TestConfig(unittest.TestCase):
         paths = get_ssl_paths("full_node", root)
         self.assertIn("private_full_node.crt", paths["cert"])
 
+
+    @patch.dict(os.environ, {"MCP_AUTH_ENABLED": "true"}, clear=True)
+    def test_get_mcp_auth_enabled_default(self):
+        """Test auth enabled default."""
+        self.assertTrue(get_mcp_auth_enabled())
+
+    @patch.dict(os.environ, {"MCP_AUTH_ENABLED": "false"}, clear=True)
+    def test_get_mcp_auth_enabled_false(self):
+        """Test auth enabled false."""
+        self.assertFalse(get_mcp_auth_enabled())
+
+    @patch.dict(os.environ, {"LETSENCRYPT_ENABLED": "true"}, clear=True)
+    def test_get_letsencrypt_enabled_default(self):
+        """Test letsencrypt enabled default."""
+        self.assertTrue(get_letsencrypt_enabled())
+
+    @patch.dict(os.environ, {"LETSENCRYPT_ENABLED": "false"}, clear=True)
+    def test_get_letsencrypt_enabled_false(self):
+        """Test letsencrypt enabled false."""
+        self.assertFalse(get_letsencrypt_enabled())

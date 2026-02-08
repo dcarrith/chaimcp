@@ -39,6 +39,7 @@ kubectl apply -f k8s/infra/cert-manager.yaml
 kubectl apply -f k8s/infra/ingress-nginx.yaml
 
 # Application
+kubectl apply -f k8s/configmap.yaml
 kubectl apply -f k8s/secret.yaml
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml

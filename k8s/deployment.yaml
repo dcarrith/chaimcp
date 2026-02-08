@@ -19,7 +19,10 @@ spec:
           image: chaimcp:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 4443
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: chaimcp-config
           env:
             - name: MCP_AUTH_TOKEN
               valueFrom:
@@ -33,8 +36,8 @@ spec:
             - name: PYTHONUNBUFFERED
               value: "1"
             - name: MCP_PORT
-              value: "4443"
-      # volumeMounts:
+              value: "8000"
+
       # - name: chia-ssl
       #   mountPath: /root/.chia/mainnet/config/ssl
       #   readOnly: true
