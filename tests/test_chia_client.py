@@ -11,7 +11,8 @@ class TestChiaRpcClient(unittest.TestCase):
     def setUp(self, mock_get_root, mock_get_ssl, mock_load_config):
         self.mock_config = {
             "full_node": {"rpc_port": 8555},
-            "wallet": {"rpc_port": 9256}
+            "wallet": {"rpc_port": 9256},
+            "data_layer": {"rpc_port": 8562}
         }
         mock_load_config.return_value = self.mock_config
         mock_get_ssl.return_value = {"cert": "c", "key": "k", "ca": "ca"}
@@ -27,6 +28,13 @@ class TestChiaRpcClient(unittest.TestCase):
              patch("chaimcp.chia_client.get_ssl_paths", return_value={"cert":"c", "key":"k"}):
             wallet_client = ChiaRpcClient("wallet")
             self.assertEqual(wallet_client.port, 9256)
+
+    def test_init_datalayer(self):
+        """Test initialization of data_layer service."""
+        with patch("chaimcp.chia_client.load_chia_config", return_value=self.mock_config), \
+             patch("chaimcp.chia_client.get_ssl_paths", return_value={"cert":"c", "key":"k"}):
+            client = ChiaRpcClient("data_layer")
+            self.assertEqual(client.port, 8562)
 
     def test_init_unknown_service(self):
         """Test error when unknown service used without explicit port."""

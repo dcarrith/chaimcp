@@ -223,7 +223,7 @@
             </div>
             <div style="text-align: right;">
                 <div style="color: var(--color-text-dim); font-size: 0.75rem; text-transform: uppercase;">Generated</div>
-                <div style="color: white; font-family: 'JetBrains Mono';">2026-02-08 06:27:19</div>
+                <div style="color: white; font-family: 'JetBrains Mono';">2026-02-08 08:10:22</div>
             </div>
         </div>
 
@@ -231,7 +231,7 @@
             <!-- Score Card -->
             <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
                 <h3 style="color: var(--color-text-dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Security Score</h3>
-                <div style="font-size: 4rem; font-weight: 800; color: #4ADE80; line-height: 1;">100</div>
+                <div style="font-size: 4rem; font-weight: 800; color: #4ADE80; line-height: 1;">97</div>
                 <div style="font-size: 0.9rem; color: var(--color-text-dim); margin-top: 0.5rem;">Pipeline Health</div>
             </div>
 
@@ -250,7 +250,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
                         <span style="font-weight: 500;">Bandit (SAST)</span>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">0 Issues</span>
+                            <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--color-text-dim);">1 Issues</span>
                             <i data-lucide="check-circle" style="color: #4ADE80; width: 16px;"></i>
                         </div>
                     </div>
@@ -279,7 +279,31 @@
         <!-- Bandit Findings -->
         <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; border-left: 4px solid var(--color-primary); padding-left: 1rem;">Code Analysis Findings</h2>
         <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem;">
-    <div class="card" style="text-align: center; color: var(--color-text-dim);">No code vulnerabilities issues found. Great job! 🎉</div>
+    
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <details>
+                <summary style="padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="severity-badge bg-medium">MEDIUM</span>
+                        <span style="font-weight: 500;">Possible binding to all interfaces.</span>
+                    </div>
+                    <div style="color: var(--color-text-dim); font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                        ./src/chaimcp/main.py:52
+                        <i data-lucide="chevron-down" style="display: inline-block; vertical-align: middle; margin-left: 8px; width: 16px;"></i>
+                    </div>
+                </summary>
+                <div style="padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">Confidence: <strong>MEDIUM</strong></p>
+                    <div class="code-block">
+                        <pre><code class="language-python">51     transport_security=transport_security,
+52     host="0.0.0.0" # Bind to all interfaces to receive Ingress traffic
+53 )
+</code></pre>
+                    </div>
+                </div>
+            </details>
+        </div>
+        
         </div>
 
         <!-- Safety Findings -->
@@ -320,7 +344,7 @@
             data: {
                 labels: ['High', 'Medium', 'Low', 'Dependencies'],
                 datasets: [{
-                    data: [0, 0, 0, 0],
+                    data: [0, 1, 0, 0],
                     backgroundColor: ['#F97316', '#F59E0B', '#3B82F6', '#A8A29E'],
                     borderWidth: 0,
                     cutout: '75%'

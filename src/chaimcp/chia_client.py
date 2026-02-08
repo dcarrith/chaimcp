@@ -19,6 +19,8 @@ class ChiaRpcClient:
                 self.port = self.config.get("full_node", {}).get("rpc_port", 8555)
             elif service_name == "wallet":
                 self.port = self.config.get("wallet", {}).get("rpc_port", 9256)
+            elif service_name == "data_layer":
+                self.port = self.config.get("data_layer", {}).get("rpc_port", 8562)
             else:
                 raise ValueError(f"Unknown default port for service: {service_name}")
         else:

@@ -42,8 +42,9 @@ class TestMain(unittest.TestCase):
         
         result = get_blockchain_state()
         data = json.loads(result)
-        self.assertEqual(data["peak_height"], 100)
-        self.assertTrue(data["synced"])
+        # New implementation returns full blockchain_state object inside the response
+        self.assertEqual(data["blockchain_state"]["peak"]["height"], 100)
+        self.assertTrue(data["blockchain_state"]["sync"]["synced"])
 
     @patch("chaimcp.main.ChiaRpcClient")
     def test_tool_get_blockchain_state_failure(self, MockClient):
@@ -55,7 +56,9 @@ class TestMain(unittest.TestCase):
         }
         
         result = get_blockchain_state()
-        self.assertIn("Error: RPC Error", result)
+        data = json.loads(result)
+        self.assertFalse(data["success"])
+        self.assertEqual(data["error"], "RPC Error")
 
     @patch("chaimcp.main.ChiaRpcClient")
     def test_tool_get_network_info(self, MockClient):
@@ -81,8 +84,9 @@ class TestMain(unittest.TestCase):
         
         result = get_wallet_balance(1)
         data = json.loads(result)
-        self.assertEqual(data["confirmed_balance_xch"], 1.5)
-        self.assertEqual(data["confirmed_balance_mojos"], 1500000000000)
+        # New implementation returns full wallet_balance object
+        self.assertEqual(data["wallet_balance"]["confirmed_wallet_balance"], 1500000000000)
+        self.assertEqual(data["wallet_balance"]["spendable_balance"], 1500000000000)
 
     @patch("chaimcp.main.ChiaRpcClient")
     def test_tool_get_wallet_balance_failure(self, MockClient):
@@ -94,7 +98,9 @@ class TestMain(unittest.TestCase):
         }
         
         result = get_wallet_balance(1)
-        self.assertIn("Error: Wallet locked", result)
+        data = json.loads(result)
+        self.assertFalse(data["success"])
+        self.assertEqual(data["error"], "Wallet locked")
 
     @patch("chaimcp.main.mcp")
     @patch.dict(os.environ, {"MCP_TRANSPORT": "stdio"})

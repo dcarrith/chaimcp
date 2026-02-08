@@ -37,6 +37,12 @@ spec:
               value: "1"
             - name: MCP_PORT
               value: "8000"
+            - name: SSL_KEY_FILE
+              value: "/nonexistent"
+            - name: SSL_CERT_FILE
+              value: "/nonexistent"
+            - name: MCP_DISABLED_TOOLS
+              value: "generate_mnemonic,add_key,delete_key,delete_all_keys"
 
       # - name: chia-ssl
       #   mountPath: /root/.chia/mainnet/config/ssl
