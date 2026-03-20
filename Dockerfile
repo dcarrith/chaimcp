@@ -28,4 +28,7 @@ USER chaimcp
 
 # BUT, we installed `chaimcp` as a script. 
 # Let's stick to a CMD that works. If FastMCP library provides a CLI:
-CMD ["fastmcp", "run", "chaimcp.main:mcp", "--transport", "sse", "--port", "8000", "--host", "0.0.0.0"]
+# CMD ["fastmcp", "run", "chaimcp.main:mcp", "--transport", "sse", "--port", "8000", "--host", "0.0.0.0"]
+
+# Start the custom runner that respects MCP_TRANSPORT environment variable
+CMD ["chaimcp"]

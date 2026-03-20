@@ -1,1 +1,8 @@
 .DS_Store
+report.json
+coverage.json
+testing.html
+security.html
+docs.html
+temp_diagram.html
+logo_processor.html

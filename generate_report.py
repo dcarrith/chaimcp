@@ -763,7 +763,7 @@ def main():
         print(f"Tests execution failed (exit code {result.returncode})")
         if not os.path.exists("report.json"):
              print("Critical: report.json not generated.")
-             return
+             sys.exit(1)
 
     # 2. Parse Results
     try:
@@ -782,6 +782,7 @@ def main():
         
     except Exception as e:
         print(f"Error generating report: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
