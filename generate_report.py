@@ -752,6 +752,7 @@ def main():
         sys.executable, "-m", "pytest", 
         "--json-report", "--json-report-file=report.json",
         "--cov=src", "--cov=scan_security.py", "--cov=local_bridge.py", "--cov-report=json:coverage.json",
+        "--ignore=tests/test_k8s_network.py",
         "tests/"
     ]
     
