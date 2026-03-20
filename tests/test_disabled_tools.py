@@ -7,7 +7,14 @@ from importlib import reload
 class TestDisabledTools(unittest.TestCase):
 
     def setUp(self):
+        self.saved_module = sys.modules.get('chaimcp.main')
         if 'chaimcp.main' in sys.modules:
+            del sys.modules['chaimcp.main']
+
+    def tearDown(self):
+        if self.saved_module:
+            sys.modules['chaimcp.main'] = self.saved_module
+        elif 'chaimcp.main' in sys.modules:
             del sys.modules['chaimcp.main']
 
     @patch("mcp.server.fastmcp.FastMCP.tool")

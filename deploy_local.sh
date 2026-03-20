@@ -38,7 +38,12 @@ echo -e "${GREEN}🚀 Applying Kubernetes manifests...${NC}"
 kubectl apply -f k8s/infra/cert-manager.yaml
 kubectl apply -f k8s/infra/ingress-nginx.yaml
 
+echo -e "${YELLOW}⏳ Waiting for infrastructure pods to be ready...${NC}"
+kubectl wait --namespace cert-manager --for=condition=ready pod --all --timeout=120s
+kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s
+
 # Application
+kubectl delete -f k8s/configmap.yaml --ignore-not-found || true
 kubectl apply -f k8s/configmap.yaml
 kubectl apply -f k8s/secret.yaml
 kubectl apply -f k8s/deployment.yaml

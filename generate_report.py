@@ -755,7 +755,9 @@ def main():
         "tests/"
     ]
     
-    result = subprocess.run(coverage_cmd, env=os.environ.copy()) # nosec # nosec
+    env = os.environ.copy()
+    env["PYTHONPATH"] = "src"
+    result = subprocess.run(coverage_cmd, env=env) # nosec # nosec
     
     if result.returncode != 0 and result.returncode != 1:
         print(f"Tests execution failed (exit code {result.returncode})")
@@ -773,6 +775,10 @@ def main():
             
         # 3. Generate HTML
         generate_html_report(test_results, coverage_results)
+        
+        if test_results['summary'].get('failed', 0) > 0 or test_results['summary'].get('error', 0) > 0:
+            print("Tests failed. Exiting with 1.")
+            sys.exit(1)
         
     except Exception as e:
         print(f"Error generating report: {e}")

@@ -56,11 +56,15 @@ def setup_k8s_env():
     # 3. Wait for pod
     run_kubectl("wait --for=condition=Ready pod/mock-chia --namespace=chia --timeout=60s")
     
+    # 4. Apply Network Policy so that test-client-deny receives the correct rules
+    run_kubectl("apply -f k8s/network-policy.yaml", check=False)
+    
     yield
     
     # Teardown
     logger.info("Tearing down test environment...")
     run_kubectl("delete namespace chia", check=False)
+    run_kubectl("delete -f k8s/network-policy.yaml", check=False)
 
 def test_egress_allow_chia(setup_k8s_env):
     """Verify chaimcp (or simulated pod) can reach Chia RPC."""

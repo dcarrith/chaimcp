@@ -160,7 +160,8 @@ class TestMain(unittest.TestCase):
     def test_auth_token_env(self):
         """Test global auth settings initialization with env var."""
         with patch.dict(os.environ, {"MCP_AUTH_TOKEN": "test-token"}):
-            reload(main_module)
+            import importlib
+            importlib.reload(main_module)
             self.assertIsNotNone(main_module.auth_settings)
             self.assertIsNotNone(main_module.token_verifier)
             self.assertEqual(main_module.token_verifier.token, "test-token")

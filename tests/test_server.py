@@ -45,8 +45,8 @@ class TestChaiMCP(unittest.TestCase):
         data = json.loads(result)
         
         # Verify
-        self.assertTrue(data["synced"])
-        self.assertEqual(data["peak_height"], 12345)
+        self.assertTrue(data["blockchain_state"]["sync"]["synced"])
+        self.assertEqual(data["blockchain_state"]["peak"]["height"], 12345)
 
     @patch("chaimcp.main.ChiaRpcClient")
     def test_get_wallet_balance(self, MockClient):
@@ -66,7 +66,7 @@ class TestChaiMCP(unittest.TestCase):
         data = json.loads(result)
         
         # Verify
-        self.assertEqual(data["confirmed_balance_xch"], 1.5)
+        self.assertEqual(data["wallet_balance"]["confirmed_wallet_balance"], 1500000000000)
 
 if __name__ == "__main__":
     unittest.main()

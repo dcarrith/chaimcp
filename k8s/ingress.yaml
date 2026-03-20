@@ -6,13 +6,11 @@ metadata:
     # Use the ClusterIssuer we created
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
 
-    # Standard NGINX Ingress class
-    kubernetes.io/ingress.class: "nginx"
-
     # Backend talks HTTP now
     # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     # nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
 spec:
+  ingressClassName: "nginx"
   tls:
     - hosts:
         - mcpch.ai

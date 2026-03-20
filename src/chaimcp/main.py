@@ -28,10 +28,12 @@ auth_settings = None
 token_verifier = None
 
 if get_mcp_auth_enabled() and auth_token:
-    # We must provide AuthSettings if we provide a verifier, even if we don't use the issuer/resource_url logic
+    # We must provide AuthSettings if we provide a verifier.
+    # We default the issuer to standard port so clients know where to discover the OAuth endpoints.
+    issuer = os.environ.get("MCP_ISSUER_URL", f"http://localhost:{os.environ.get('MCP_PORT', 8000)}")
     auth_settings = AuthSettings(
-        issuer_url="http://localhost",
-        resource_server_url="http://localhost",
+        issuer_url=issuer,
+        resource_server_url=issuer,
     )
     token_verifier = EnvTokenVerifier(auth_token)
 
@@ -267,6 +269,48 @@ def get_kv_diff(store_id: str, hash_1: str, hash_2: str) -> str:
     client = ChiaRpcClient("data_layer")
     return json.dumps(client.get("get_kv_diff", {"id": store_id, "hash_1": hash_1, "hash_2": hash_2}), indent=2)
 
+from starlette.responses import JSONResponse
+
+@mcp.custom_route("/.well-known/oauth-authorization-server", methods=["GET"])
+async def well_known_oauth_auth(request):
+    host_url = str(request.base_url).rstrip("/")
+    return JSONResponse({
+        "issuer": host_url,
+        "registration_endpoint": f"{host_url}/register",
+        "token_endpoint": f"{host_url}/token",
+        "grant_types_supported": ["client_credentials"],
+        "token_endpoint_auth_methods_supported": ["client_secret_post", "client_secret_basic"]
+    })
+
+@mcp.custom_route("/.well-known/openid-configuration", methods=["GET"])
+async def well_known_openid(request):
+    host_url = str(request.base_url).rstrip("/")
+    return JSONResponse({
+        "issuer": host_url,
+        "registration_endpoint": f"{host_url}/register",
+        "token_endpoint": f"{host_url}/token",
+        "grant_types_supported": ["client_credentials"],
+        "token_endpoint_auth_methods_supported": ["client_secret_post", "client_secret_basic"]
+    })
+
+@mcp.custom_route("/register", methods=["POST"])
+async def oauth_register(request):
+    return JSONResponse({
+        "client_id": "chaimcp_client",
+        "client_secret": "chaimcp_secret",
+        "client_id_issued_at": 1700000000,
+        "token_endpoint_auth_method": "client_secret_basic"
+    }, status_code=201)
+
+@mcp.custom_route("/token", methods=["POST"])
+async def oauth_token(request):
+    token = os.environ.get("MCP_AUTH_TOKEN", "mock_token")
+    return JSONResponse({
+        "access_token": token,
+        "token_type": "Bearer",
+        "expires_in": 3600
+    })
+
 def main():
     """Entry point for the application script."""
     transport = os.environ.get("MCP_TRANSPORT", "stdio")
@@ -298,6 +342,8 @@ def main():
             # transport == "http"
             starlette_app = mcp.streamable_http_app()
         
+        print("ROUTES:", [r.path for r in starlette_app.routes])
+
         uvicorn.run(
             starlette_app, 
             host=host, 
