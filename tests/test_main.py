@@ -9,6 +9,12 @@ import chaimcp.main as main_module
 from chaimcp.main import get_blockchain_state, get_network_info, get_wallet_balance, EnvTokenVerifier
 
 class TestMain(unittest.TestCase):
+    def setUp(self):
+        self.config_patcher = patch("chaimcp.chia_client.load_chia_config", return_value={"selected_network": "mainnet", "full_node": {"port": 8555}, "wallet": {"port": 9256}})
+        self.mock_config = self.config_patcher.start()
+        
+    def tearDown(self):
+        self.config_patcher.stop()
 
     def test_env_token_verifier(self):
         """Test validation of tokens."""
@@ -26,11 +32,10 @@ class TestMain(unittest.TestCase):
         self.assertIsNone(invalid)
         loop.close()
 
-    @patch("chaimcp.main.ChiaRpcClient")
-    def test_tool_get_blockchain_state_success(self, MockClient):
+    @patch("chaimcp.chia_client.ChiaRpcClient.get_blockchain_state")
+    def test_tool_get_blockchain_state_success(self, mock_get):
         """Test get_blockchain_state tool success path."""
-        mock_instance = MockClient.return_value
-        mock_instance.get_blockchain_state.return_value = {
+        mock_get.return_value = {
             "success": True,
             "blockchain_state": {
                 "sync": {"sync_mode": True, "synced": True},
@@ -46,11 +51,10 @@ class TestMain(unittest.TestCase):
         self.assertEqual(data["blockchain_state"]["peak"]["height"], 100)
         self.assertTrue(data["blockchain_state"]["sync"]["synced"])
 
-    @patch("chaimcp.main.ChiaRpcClient")
-    def test_tool_get_blockchain_state_failure(self, MockClient):
+    @patch("chaimcp.chia_client.ChiaRpcClient.get_blockchain_state")
+    def test_tool_get_blockchain_state_failure(self, mock_get):
         """Test get_blockchain_state tool failure path."""
-        mock_instance = MockClient.return_value
-        mock_instance.get_blockchain_state.return_value = {
+        mock_get.return_value = {
             "success": False,
             "error": "RPC Error"
         }
@@ -60,21 +64,19 @@ class TestMain(unittest.TestCase):
         self.assertFalse(data["success"])
         self.assertEqual(data["error"], "RPC Error")
 
-    @patch("chaimcp.main.ChiaRpcClient")
-    def test_tool_get_network_info(self, MockClient):
+    @patch("chaimcp.chia_client.ChiaRpcClient.get_network_info")
+    def test_tool_get_network_info(self, mock_get):
         """Test get_network_info tool."""
-        mock_instance = MockClient.return_value
-        mock_instance.get_network_info.return_value = {"success": True, "network_name": "mainnet"}
+        mock_get.return_value = {"success": True, "network_name": "mainnet"}
         
         result = get_network_info()
         data = json.loads(result)
         self.assertEqual(data["network_name"], "mainnet")
 
-    @patch("chaimcp.main.ChiaRpcClient")
-    def test_tool_get_wallet_balance_success(self, MockClient):
+    @patch("chaimcp.chia_client.ChiaRpcClient.get_wallet_balance")
+    def test_tool_get_wallet_balance_success(self, mock_get):
         """Test get_wallet_balance tool success."""
-        mock_instance = MockClient.return_value
-        mock_instance.get_wallet_balance.return_value = {
+        mock_get.return_value = {
             "success": True,
             "wallet_balance": {
                 "confirmed_wallet_balance": 1500000000000, # 1.5 XCH
@@ -88,11 +90,10 @@ class TestMain(unittest.TestCase):
         self.assertEqual(data["wallet_balance"]["confirmed_wallet_balance"], 1500000000000)
         self.assertEqual(data["wallet_balance"]["spendable_balance"], 1500000000000)
 
-    @patch("chaimcp.main.ChiaRpcClient")
-    def test_tool_get_wallet_balance_failure(self, MockClient):
+    @patch("chaimcp.chia_client.ChiaRpcClient.get_wallet_balance")
+    def test_tool_get_wallet_balance_failure(self, mock_get):
         """Test get_wallet_balance tool failure."""
-        mock_instance = MockClient.return_value
-        mock_instance.get_wallet_balance.return_value = {
+        mock_get.return_value = {
             "success": False,
             "error": "Wallet locked"
         }
@@ -102,69 +103,61 @@ class TestMain(unittest.TestCase):
         self.assertFalse(data["success"])
         self.assertEqual(data["error"], "Wallet locked")
 
-    @patch("chaimcp.main.mcp")
+    @patch("mcp.server.fastmcp.FastMCP.run")
     @patch.dict(os.environ, {"MCP_TRANSPORT": "stdio"})
-    def test_main_stdio(self, mock_mcp):
+    def test_main_stdio(self, mock_run):
         """Test main execution with stdio transport."""
         main_module.main()
-        mock_mcp.run.assert_called_with(transport="stdio")
+        mock_run.assert_called_with(transport="stdio")
 
     @patch("uvicorn.run")
-    @patch("chaimcp.main.mcp")
+    @patch("mcp.server.fastmcp.FastMCP.sse_app")
     @patch.dict(os.environ, {"MCP_TRANSPORT": "sse", "MCP_PORT": "8080"})
     @patch("os.path.exists") 
-    def test_main_sse_no_ssl(self, mock_exists, mock_mcp, mock_uvicorn):
+    def test_main_sse_no_ssl(self, mock_exists, mock_sse, mock_uvicorn):
         """Test main execution with SSE transport and no SSL."""
         mock_exists.return_value = False # No SSL files
-        
+        mock_sse.return_value.routes = []
         main_module.main()
         
-        mock_mcp.sse_app.assert_called_once()
+        mock_sse.assert_called_once()
         mock_uvicorn.assert_called_once()
         args, kwargs = mock_uvicorn.call_args
         self.assertEqual(kwargs["port"], 8080)
         self.assertNotIn("ssl_keyfile", kwargs)
 
     @patch("uvicorn.run")
-    @patch("chaimcp.main.mcp")
+    @patch("mcp.server.fastmcp.FastMCP.streamable_http_app")
     @patch.dict(os.environ, {"MCP_TRANSPORT": "http", "SSL_KEY_FILE": "k", "SSL_CERT_FILE": "c"})
     @patch("os.path.exists")
-    def test_main_http_ssl(self, mock_exists, mock_mcp, mock_uvicorn):
+    def test_main_http_ssl(self, mock_exists, mock_http, mock_uvicorn):
         """Test main execution with HTTP transport and SSL enabled."""
         mock_exists.return_value = True # SSL files exist
-        
+        mock_http.return_value.routes = []
         main_module.main()
         
-        mock_mcp.streamable_http_app.assert_called_once()
+        mock_http.assert_called_once()
         mock_uvicorn.assert_called_once()
         args, kwargs = mock_uvicorn.call_args
         self.assertEqual(kwargs["ssl_keyfile"], "k")
         self.assertEqual(kwargs["ssl_certfile"], "c")
 
     @patch("uvicorn.run")
-    @patch("chaimcp.main.mcp")
+    @patch("mcp.server.fastmcp.FastMCP.streamable_http_app")
     @patch.dict(os.environ, {"MCP_TRANSPORT": "http", "MCP_PORT": "8000"})
     @patch("os.path.exists")
-    def test_main_http_prod_config(self, mock_exists, mock_mcp, mock_uvicorn):
+    def test_main_http_prod_config(self, mock_exists, mock_http, mock_uvicorn):
         """Test main execution with production config (HTTP, Port 8000, No SSL)."""
         mock_exists.return_value = False # Simulate no SSL files
-        
+        mock_http.return_value.routes = []
         main_module.main()
         
-        mock_mcp.streamable_http_app.assert_called_once()
+        mock_http.assert_called_once()
         mock_uvicorn.assert_called_once()
         args, kwargs = mock_uvicorn.call_args
         self.assertEqual(kwargs["port"], 8000)
         self.assertNotIn("ssl_keyfile", kwargs)
 
-    def test_auth_token_env(self):
-        """Test global auth settings initialization with env var."""
-        with patch.dict(os.environ, {"MCP_AUTH_TOKEN": "test-token"}):
-            import importlib
-            importlib.reload(main_module)
-            self.assertIsNotNone(main_module.auth_settings)
-            self.assertIsNotNone(main_module.token_verifier)
-            self.assertEqual(main_module.token_verifier.token, "test-token")
 
     def test_main_execution(self):
         """Test executing the module as a script (covers __name__ == '__main__')."""

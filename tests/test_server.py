@@ -25,13 +25,18 @@ class TestAuth(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(token)
 
 class TestChaiMCP(unittest.TestCase):
+    def setUp(self):
+        self.config_patcher = patch("chaimcp.chia_client.load_chia_config", return_value={"selected_network": "mainnet", "full_node": {"port": 8555}, "wallet": {"port": 9256}})
+        self.mock_config = self.config_patcher.start()
+        
+    def tearDown(self):
+        self.config_patcher.stop()
     
-    @patch("chaimcp.main.ChiaRpcClient")
-    def test_get_blockchain_state(self, MockClient):
+    @patch("chaimcp.chia_client.ChiaRpcClient.get_blockchain_state")
+    def test_get_blockchain_state(self, mock_get):
         """Test get_blockchain_state tool."""
         # Setup mock
-        mock_instance = MockClient.return_value
-        mock_instance.get_blockchain_state.return_value = {
+        mock_get.return_value = {
             "success": True,
             "blockchain_state": {
                 "sync": {"sync_mode": False, "synced": True},
@@ -48,12 +53,11 @@ class TestChaiMCP(unittest.TestCase):
         self.assertTrue(data["blockchain_state"]["sync"]["synced"])
         self.assertEqual(data["blockchain_state"]["peak"]["height"], 12345)
 
-    @patch("chaimcp.main.ChiaRpcClient")
-    def test_get_wallet_balance(self, MockClient):
+    @patch("chaimcp.chia_client.ChiaRpcClient.get_wallet_balance")
+    def test_get_wallet_balance(self, mock_get):
         """Test get_wallet_balance tool."""
         # Setup mock
-        mock_instance = MockClient.return_value
-        mock_instance.get_wallet_balance.return_value = {
+        mock_get.return_value = {
             "success": True,
             "wallet_balance": {
                 "confirmed_wallet_balance": 1500000000000, # 1.5 XCH
