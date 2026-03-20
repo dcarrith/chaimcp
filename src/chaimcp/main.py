@@ -341,6 +341,16 @@ def main():
         else:
             # transport == "http"
             starlette_app = mcp.streamable_http_app()
+            
+            # WORKAROUND: FastMCP SDK bug - StreamableHTTPASGIApp is mounted via Route without methods.
+            # Starlette defaults Route methods to GET/HEAD, rejecting POST with 405 Method Not Allowed.
+            for route in starlette_app.routes:
+                if getattr(route, "path", None) == "/mcp":
+                    if hasattr(route, "methods") and route.methods is not None:
+                        if isinstance(route.methods, set):
+                            route.methods.add("POST")
+                        else:
+                            route.methods = set(route.methods) | {"POST"}
         
         print("ROUTES:", [r.path for r in starlette_app.routes])
 
